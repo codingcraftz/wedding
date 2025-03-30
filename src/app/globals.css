@@ -144,6 +144,14 @@
   }
 }
 
+/* 모든 컨테이너의 최대 너비 제한 */
+.container,
+section,
+main,
+div {
+  max-width: 100vw;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -192,4 +200,11 @@
 
 .animate-pulse-down {
   animation: pulse 2s ease-in-out infinite;
+}
+
+/* keen-slider 오버라이드 */
+.keen-slider {
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: hidden !important;
 }

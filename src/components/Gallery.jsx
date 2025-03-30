@@ -68,11 +68,13 @@ export default function GalleryCarousel() {
   };
 
   return (
-    <section className="py-12 relative">
-      <div className="max-w-md mx-auto px-2">
-        <h2 className="text-xl font-semibold mb-6 text-center text-[#ee7685] border-2 border-[#ee7685] rounded-full py-2 px-6 inline-block mx-auto">
-          갤러리
-        </h2>
+    <section className="py-12 relative overflow-hidden w-full">
+      <div className="max-w-md mx-auto px-2 overflow-hidden">
+        <div className="flex justify-center mb-6">
+          <h2 className="text-xl font-semibold text-center text-[#ee7685] border-2 border-[#ee7685] rounded-full py-2 px-6 inline-block">
+            갤러리
+          </h2>
+        </div>
 
         {/* 로딩 표시 */}
         {imagesLoaded < totalImages / 2 && (
@@ -81,11 +83,12 @@ export default function GalleryCarousel() {
           </div>
         )}
 
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden w-full">
           {/* 슬라이더 컨테이너 */}
           <div
             ref={sliderRef}
             className="keen-slider h-[350px] md:h-[500px] rounded-xl overflow-hidden"
+            style={{ maxWidth: "100%" }}
           >
             {images.map((src, idx) => (
               <div
@@ -98,7 +101,7 @@ export default function GalleryCarousel() {
                     src={src}
                     alt={`갤러리 이미지 ${idx + 1}`}
                     fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 768px) 90vw, 400px"
                     className="object-cover rounded-xl"
                     priority={idx < 5} // 처음 5개 이미지는 우선 로드
                     onLoad={handleImageLoad}
@@ -113,7 +116,10 @@ export default function GalleryCarousel() {
           {loaded && instanceRef.current && (
             <>
               <button
-                onClick={() => instanceRef.current?.prev()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  instanceRef.current?.prev();
+                }}
                 className={`absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md z-10 transition-opacity ${
                   showArrows || imagesLoaded < totalImages ? "opacity-60" : "opacity-0"
                 } hover:opacity-100`}
@@ -123,7 +129,10 @@ export default function GalleryCarousel() {
               </button>
 
               <button
-                onClick={() => instanceRef.current?.next()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  instanceRef.current?.next();
+                }}
                 className={`absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md z-10 transition-opacity ${
                   showArrows || imagesLoaded < totalImages ? "opacity-60" : "opacity-0"
                 } hover:opacity-100`}

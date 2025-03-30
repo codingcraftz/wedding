@@ -22,10 +22,12 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body
         id="root"
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background overflow-x-hidden`}
       >
-        {children}
-        <AudioPlayer />
+        <div className="overflow-x-hidden w-full">
+          {children}
+          <AudioPlayer />
+        </div>
       </body>
     </html>
   );

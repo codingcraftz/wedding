@@ -8,7 +8,7 @@ import Guestbook from "@/components/Guestbook";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center min-h-screen">
+    <main className="flex flex-col items-center min-h-screen bg-white overflow-x-hidden w-full">
       <MainContent />
       <div className="bg-white py-12">
         <Gallery />
@@ -18,7 +18,7 @@ export default function Home() {
       </div>
       <NavigationAndAddress />
       <Account />
-      <div className="bg-white py-12 w-full">
+      <div className="bg-white py-12">
         <Guestbook />
       </div>
     </main>
