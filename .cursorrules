@@ -1,0 +1,15 @@
+모바일 청첩장 웹앱 입니다.
+모바일 사이즈만 고려해서 제작 하면 됩니다.
+
+### 기술스택
+- 패키지매니저 pnpm
+- next.js - app라우터
+- Typescript 사용안함(컴포넌트'.jsx', javascript '.js')
+- style: tailwindcss 사용해주세요.
+- 아이콘은 Lucide React 사용해주세요.
+
+### ShadCn components
+- 모든 UI컴포넌트는 ShadCn사용 
+- 컴포넌트 사용전 설치여부 확인해주세요 path: '/src/components/ui/'
+- 컴포넌트 설치 명령어 'pnpm dlx shadcn@latest add [component-name]'
+
