@@ -1,8 +1,23 @@
 "use client";
 
 import React from "react";
+import { Noto_Serif_KR, Gamja_Flower } from "next/font/google";
 import "./CalendarStyles.css";
 import { WEDDING_DATE } from "@/lib/constants";
+
+// 나눔명조 폰트 (우아하고 전통적인 청첩장 느낌)
+const notoSerif = Noto_Serif_KR({
+  weight: ["400", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// 감자꽃 폰트 (캘린더 날짜에 귀여운 느낌)
+const gamjaFlower = Gamja_Flower({
+  weight: ["400"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export default function WeddingCalendar() {
   const weddingDate = new Date(WEDDING_DATE); // 결혼식 날짜
@@ -51,12 +66,15 @@ export default function WeddingCalendar() {
   const formattedDate = `${year}.${month}.${day} ${weekday}`;
 
   return (
-    <div className="text-pink-400 flex flex-col items-center justify-center font-sans">
+    <div
+      className={`text-[#ee7685] flex flex-col items-center justify-center ${gamjaFlower.className}`}
+    >
       {/* 헤더에 동적으로 날짜 표시 */}
-      <h2 className="text-2xl font-bold mb-6">{formattedDate}</h2>
-      <div className="w-96 rounded-lg shadow-md p-4">
+      <h2 className="text-2xl">{formattedDate}</h2>
+      <p className="mb-4 italic">1:20PM</p>
+      <div className="w-96 rounded-lg p-4">
         {/* 달력 헤더 */}
-        <div className="grid grid-cols-7 text-center font-semibold text-pink-400 mb-4">
+        <div className="grid grid-cols-7 text-center font-semibold mb-4">
           <div>SUN</div>
           <div>MON</div>
           <div>TUE</div>
@@ -66,16 +84,16 @@ export default function WeddingCalendar() {
           <div>SAT</div>
         </div>
         {/* 달력 내용 */}
-        <div className="grid grid-cols-7 text-center">
+        <div className={`grid grid-cols-7 text-center ${gamjaFlower.className}`}>
           {calendar.map((week, weekIndex) => (
             <React.Fragment key={weekIndex}>
               {week.map((dayValue, dayIndex) => (
                 <div
                   key={dayIndex}
-                  className={`py-2 ${
+                  className={`py-2 text-lg ${
                     dayValue === weddingDate.getDate()
-                      ? "bg-pink-500 text-black font-bold rounded-full"
-                      : "text-pink-400"
+                      ? "bg-[#ee7685] text-[#181818] font-bold rounded-full"
+                      : "text-[#ee7685]"
                   }`}
                 >
                   {dayValue || ""}
