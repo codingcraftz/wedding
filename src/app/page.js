@@ -40,10 +40,7 @@ export default function Home() {
           <Guestbook />
         </div>
       </AnimatedSection>
-
-      <AnimatedSection animation="fade-in" delay={600}>
-        <ShareButtons />
-      </AnimatedSection>
+      <ShareButtons />
     </main>
   );
 }
