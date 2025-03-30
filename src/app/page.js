@@ -6,23 +6,44 @@ import Gallery from "@/components/Gallery";
 import Account from "@/components/Account";
 import Guestbook from "@/components/Guestbook";
 import ShareButtons from "@/components/ShareButtons";
+import AnimatedSection from "@/components/AnimatedSection";
 
 export default function Home() {
   return (
     <main className="flex flex-col items-center min-h-screen bg-white overflow-x-hidden w-full">
       <MainContent />
-      <div className="bg-white py-12">
-        <Gallery />
-      </div>
-      <div className="bg-[#181818] py-18 px-12">
-        <WeddingCalendar />
-      </div>
-      <NavigationAndAddress />
-      <Account />
-      <div className="bg-white py-12 w-full">
-        <Guestbook />
-      </div>
-      <ShareButtons />
+
+      <AnimatedSection animation="fade-up" delay={100}>
+        <div className="bg-white py-12 w-full">
+          <Gallery />
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection animation="fade-up" delay={200}>
+        <div className="bg-[#181818] py-18 px-12 w-full">
+          <WeddingCalendar />
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection animation="fade-up" delay={300}>
+        <NavigationAndAddress />
+      </AnimatedSection>
+
+      <AnimatedSection animation="fade-up" delay={400}>
+        <div className="py-12 w-full">
+          <Account />
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection animation="fade-in" delay={500}>
+        <div className="bg-white py-12 w-full">
+          <Guestbook />
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection animation="fade-in" delay={600}>
+        <ShareButtons />
+      </AnimatedSection>
     </main>
   );
 }
