@@ -1,14 +1,37 @@
 "use client";
 
-import { HALL_NAME, HALL_ADDRESS, HALL_LAT, HALL_LNG } from "@/lib/constants";
-import Script from "next/script";
-import { Toaster, toast } from "react-hot-toast";
+import React, { useState } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
+import Script from "next/script";
+import toast, { Toaster } from "react-hot-toast";
+import { HALL_LAT, HALL_LNG, HALL_NAME, HALL_ADDRESS } from "@/lib/constants";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { Noto_Sans_KR } from "next/font/google";
+import { Bus, Train, Car, Copy, Map as MapIcon, MapPin, ExternalLink } from "lucide-react";
+import { Gamja_Flower } from "next/font/google";
+
+// 노토 산스 폰트 (무난하고 가독성 좋은 폰트)
+const notoSans = Noto_Sans_KR({
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const gamjaFlower = Gamja_Flower({
+  weight: ["400"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export default function NavigationAndAddress() {
-  // 내비게이션 URL
-  const kakaoNaviUrl = `kakaonavi://navigate?name=${HALL_NAME}&coord_type=wgs84&pos_x=${HALL_LNG}&pos_y=${HALL_LAT}`;
-  const naverNaviUrl = `nnavimap://navigate?name=${HALL_NAME}&lat=${HALL_LAT}&lng=${HALL_LNG}`;
+  const [activeTab, setActiveTab] = useState("navi");
+
+  // 네비게이션 URL (수정됨)
+  const kakaoNaviUrl = `kakaomap://look?p=${HALL_LAT},${HALL_LNG}`;
+  const naverNaviUrl = `nmap://navigation?dlat=${HALL_LAT}&dlng=${HALL_LNG}&dname=${encodeURIComponent(
+    HALL_NAME
+  )}&appname=wedding-app`;
   const tMapNaviUrl = `tmap://route?goalname=${HALL_NAME}&goalx=${HALL_LNG}&goaly=${HALL_LAT}`;
 
   // 주소 복사 기능
@@ -28,7 +51,9 @@ export default function NavigationAndAddress() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center bg-white py-14 gap-10">
+    <div
+      className={`flex flex-col items-center justify-center bg-white py-18 px-4 ${notoSans.className}`}
+    >
       {/* Toast Container */}
       <Toaster position="top-center" reverseOrder={false} />
       <Script
@@ -37,62 +62,160 @@ export default function NavigationAndAddress() {
       />
 
       {/* "오시는 길" 섹션 */}
-      <div className="border-2 border-[#ee7685] text-[#ee7685] font-bold px-4 py-2 rounded-full font-crimson">
+      <div
+        className={`border-2 border-[#ee7685] text-[#ee7685] font-bold px-6 py-2 mb-8 rounded-full text-xl mb-6 ${gamjaFlower.className}`}
+      >
         오시는 길
       </div>
 
       {/* 카카오 지도 */}
-      <div className="w-full h-96 bg-white relative px-10">
+      <div className="w-full h-80 bg-white relative mb-6 rounded-xl overflow-hidden shadow-md">
         <Map
           center={{ lat: HALL_LAT, lng: HALL_LNG }}
           style={{ width: "100%", height: "100%" }}
           level={3}
         >
           <MapMarker position={{ lat: HALL_LAT, lng: HALL_LNG }}>
-            <div className="text-sm text-black">{HALL_NAME}</div>
+            <div className="text-sm text-black p-1">{HALL_NAME}</div>
           </MapMarker>
         </Map>
       </div>
 
       {/* 주소 표시 */}
-      <div className="flex flex-col gap-2 py-4 font-sans items-start w-full px-10">
+      <div className="flex flex-col gap-2 py-2 items-center w-full mb-4 text-center">
+        <p className="text-[#ee7685] font-semibold text-xl">{HALL_NAME}</p>
         <p className="text-gray-700">{HALL_ADDRESS}</p>
-        <p className="font-bold text-black">{HALL_NAME}</p>
+        <button
+          onClick={copyAddress}
+          className="flex items-center gap-1 mt-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm"
+        >
+          <Copy size={14} /> 주소 복사하기
+        </button>
       </div>
 
-      {/* 내비게이션 버튼 */}
-      <div className="flex flex-col gap-4 w-full px-10">
-        <div className="flex gap-4">
-          <button
-            onClick={() => (window.location.href = kakaoNaviUrl)}
-            className="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-pink-600 flex-1"
-          >
-            카카오네비
-          </button>
-          <button
-            onClick={() => (window.location.href = naverNaviUrl)}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 flex-1"
-          >
-            네이버네비
-          </button>
-          <button
-            onClick={() => (window.location.href = tMapNaviUrl)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 flex-1"
-          >
-            티맵
-          </button>
+      {/* 버스 대절 정보 (중요한 정보이므로 탭 밖으로 이동) */}
+      <div className="w-full max-w-md mb-8">
+        <div className="bg-[#ee7685]/10 p-4 rounded-lg border-l-4 border-[#ee7685] shadow-sm">
+          <h3 className="text-[#ee7685] font-semibold text-lg mb-2 flex items-center gap-1">
+            <Bus size={18} /> 한동고속관광버스 안내
+          </h3>
+          <div className="flex flex-col gap-1 text-gray-700">
+            <p className="flex flex-col sm:flex-row sm:items-center">
+              <span className="font-semibold mr-2 text-[#ee7685]">출발지:</span>
+              <span>용흥공영주차장(포항시 북구 용흥동 산24-3)</span>
+            </p>
+            <p className="flex flex-col sm:flex-row sm:items-center">
+              <span className="font-semibold mr-2 text-[#ee7685]">출발시간:</span>
+              <span className="font-medium">2025년 5월 31일(토) 오전 7:30 출발</span>
+            </p>
+          </div>
+          <p className="mt-2 text-sm bg-white p-2 rounded border border-[#ee7685]/20">
+            <span className="font-bold text-[#ee7685]">※ 참고사항:</span> 버스는 예약되어 있으니
+            시간에 맞춰 도착해주세요. 정시에 출발합니다.
+          </p>
         </div>
       </div>
 
-      {/* 주소 복사 버튼 */}
-      <div className="flex justify-center mt-6">
-        <button
-          onClick={copyAddress}
-          className="bg-gray-800 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-900"
-        >
-          주소 복사하기
-        </button>
-      </div>
+      {/* 탭 내비게이션 */}
+      <Tabs defaultValue="navi" className="w-full max-w-md" onValueChange={setActiveTab}>
+        <TabsList className="grid grid-cols-2 mb-6">
+          <TabsTrigger value="navi" className="flex items-center gap-1">
+            <Car size={16} /> 내비게이션
+          </TabsTrigger>
+          <TabsTrigger value="public" className="flex items-center gap-1">
+            <Train size={16} /> 대중교통
+          </TabsTrigger>
+        </TabsList>
+
+        {/* 내비게이션 컨텐츠 */}
+        <TabsContent value="navi">
+          <Card className="border-[#ee7685]/20">
+            <CardContent className="pt-2">
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  onClick={() => window.open(kakaoNaviUrl, "_blank")}
+                  className="flex flex-col items-center justify-center gap-2 bg-yellow-50 hover:bg-yellow-100 text-yellow-600 p-4 rounded-lg transition-colors"
+                >
+                  <div className="w-12 h-12 bg-yellow-500 text-white rounded-full flex items-center justify-center">
+                    <MapIcon size={24} />
+                  </div>
+                  <span>카카오맵</span>
+                </button>
+                <button
+                  onClick={() => window.open(naverNaviUrl, "_blank")}
+                  className="flex flex-col items-center justify-center gap-2 bg-green-50 hover:bg-green-100 text-green-600 p-4 rounded-lg transition-colors"
+                >
+                  <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center">
+                    <MapIcon size={24} />
+                  </div>
+                  <span>네이버맵</span>
+                </button>
+                <button
+                  onClick={() => window.open(tMapNaviUrl, "_blank")}
+                  className="flex flex-col items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-600 p-4 rounded-lg transition-colors"
+                >
+                  <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center">
+                    <MapIcon size={24} />
+                  </div>
+                  <span>티맵</span>
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* 대중교통 정보 */}
+        <TabsContent value="public">
+          <Card className="border-[#ee7685]/20">
+            <CardContent className="pt-2">
+              <div className="flex flex-col gap-4">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h3 className="text-blue-600 font-bold text-lg mb-2 flex items-center gap-1">
+                    <Train size={18} /> 지하철
+                  </h3>
+                  <p className="text-gray-700">
+                    2호선 건대입구역 2번 출구와 7호선 건대입구역 3번 출구 앞 건물
+                  </p>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h3 className="text-green-600 font-bold text-lg mb-2 flex items-center gap-1">
+                    <Bus size={18} /> 버스
+                  </h3>
+                  <p className="text-gray-700 mb-2">건대입구역, 건대입구역 사거리 하차</p>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="inline-block bg-blue-500 text-white px-2 py-0.5 rounded text-xs">
+                        간선
+                      </span>
+                      <p className="mt-1">240번, 721번, N61번, N62번</p>
+                    </div>
+                    <div>
+                      <span className="inline-block bg-green-500 text-white px-2 py-0.5 rounded text-xs">
+                        지선
+                      </span>
+                      <p className="mt-1">2016번, 2222번, 3217번, 3220번, 4212번</p>
+                    </div>
+                    <div>
+                      <span className="inline-block bg-red-500 text-white px-2 py-0.5 rounded text-xs">
+                        직행
+                      </span>
+                      <p className="mt-1">102번, 3500번</p>
+                    </div>
+                    <div>
+                      <span className="inline-block bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">
+                        공항
+                      </span>
+                      <p className="mt-1">6013번</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

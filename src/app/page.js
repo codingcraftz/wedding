@@ -1,17 +1,26 @@
-import Gallery from "@/components/Gallery";
+import Image from "next/image";
 import MainContent from "@/components/MainContent";
-import NavigationAndAddress from "@/components/Map";
 import WeddingCalendar from "@/components/WeddingCalendar";
+import NavigationAndAddress from "@/components/Map";
+import Gallery from "@/components/Gallery";
+import Account from "@/components/Account";
+import Guestbook from "@/components/Guestbook";
 
 export default function Home() {
   return (
-    <main className="bg-background w-full">
+    <main className="flex flex-col items-center min-h-screen">
       <MainContent />
-      <Gallery />
-      <div className="bg-[#181818] py-24 px-12">
+      <div className="bg-white py-12">
+        <Gallery />
+      </div>
+      <div className="bg-[#181818] py-18 px-12">
         <WeddingCalendar />
       </div>
       <NavigationAndAddress />
+      <Account />
+      <div className="bg-white py-12 w-full">
+        <Guestbook />
+      </div>
     </main>
   );
 }

@@ -17,7 +17,7 @@ export default function GalleryCarousel() {
 
   return (
     <section className="px-4 py-8">
-      <h2 className="text-xl font-semibold mb-4 text-center">📸 갤러리</h2>
+      <h2 className="text-xl font-semibold mb-8 text-center">📸 갤러리</h2>
 
       <div ref={sliderRef} className="keen-slider">
         {images.map((src, idx) => (
