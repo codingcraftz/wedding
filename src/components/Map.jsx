@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
 import Script from "next/script";
 import toast, { Toaster } from "react-hot-toast";
 import { HALL_LAT, HALL_LNG, HALL_NAME, HALL_ADDRESS } from "@/lib/constants";
@@ -82,9 +82,15 @@ export default function NavigationAndAddress() {
           style={{ width: "100%", height: "100%" }}
           level={3}
         >
-          <MapMarker position={{ lat: HALL_LAT, lng: HALL_LNG }}>
-            <div className="text-sm text-black p-1">{HALL_NAME}</div>
-          </MapMarker>
+          <MapMarker position={{ lat: HALL_LAT, lng: HALL_LNG }}></MapMarker>
+          <CustomOverlayMap position={{ lat: HALL_LAT, lng: HALL_LNG }} yAnchor={1}>
+            <div className="bg-white px-3 py-2 border-2 border-[#ee7685] rounded-lg shadow-md relative">
+              <span className="text-sm font-medium flex justify-center items-center text-[#ee7685]">
+                {HALL_NAME}
+              </span>
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-[#ee7685] rotate-45"></div>
+            </div>
+          </CustomOverlayMap>
         </Map>
       </div>
 
