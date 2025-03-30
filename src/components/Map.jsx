@@ -26,6 +26,7 @@ const gamjaFlower = Gamja_Flower({
 
 export default function NavigationAndAddress() {
   const [activeTab, setActiveTab] = useState("navi");
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // 네비게이션 URL (수정됨)
   const kakaoNaviUrl = `kakaomap://look?p=${HALL_LAT},${HALL_LNG}`;
@@ -33,6 +34,11 @@ export default function NavigationAndAddress() {
     HALL_NAME
   )}&appname=wedding-app`;
   const tMapNaviUrl = `tmap://route?goalname=${HALL_NAME}&goalx=${HALL_LNG}&goaly=${HALL_LAT}`;
+
+  // Kakao 지도 SDK 로드 콜백
+  const onKakaoMapScriptLoad = () => {
+    setMapLoaded(true);
+  };
 
   // 주소 복사 기능
   const copyAddress = async () => {
@@ -59,6 +65,7 @@ export default function NavigationAndAddress() {
       <Script
         src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY}&libraries=services,clusterer&autoload=false`}
         strategy="beforeInteractive"
+        onLoad={onKakaoMapScriptLoad}
       />
 
       {/* "오시는 길" 섹션 */}
@@ -82,7 +89,7 @@ export default function NavigationAndAddress() {
       </div>
 
       {/* 주소 표시 */}
-      <div className="flex flex-col gap-2 py-2 items-center w-full mb-4 text-center">
+      <div className="flex flex-col gap-2 py-2 items-center w-full mb-4 text-center mt-12">
         <p className="text-[#ee7685] font-semibold text-xl">{HALL_NAME}</p>
         <p className="text-gray-700">{HALL_ADDRESS}</p>
         <button

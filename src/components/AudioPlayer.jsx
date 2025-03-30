@@ -43,7 +43,6 @@ export default function AudioPlayer() {
     if (!hasInteracted) {
       localStorage.setItem("weddingMusicInteracted", "true");
       setHasInteracted(true);
-      setShowPlayPrompt(false);
     }
 
     setIsPlaying(!isPlaying);
@@ -60,13 +59,28 @@ export default function AudioPlayer() {
     if (!hasInteracted) {
       localStorage.setItem("weddingMusicInteracted", "true");
       setHasInteracted(true);
-      setShowPlayPrompt(false);
     }
   };
 
-  // 초기 재생 안내 메시지 닫기
-  const dismissPlayPrompt = () => {
+  // 초기 재생 시작 및 안내 메시지 닫기
+  const startPlayback = () => {
     setShowPlayPrompt(false);
+    setHasInteracted(true);
+    localStorage.setItem("weddingMusicInteracted", "true");
+
+    // 음악 재생 시작
+    if (audioRef.current) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .catch((error) => {
+            console.log("자동 재생이 브라우저에 의해 차단되었습니다.", error);
+          })
+          .then(() => {
+            setIsPlaying(true);
+          });
+      }
+    }
   };
 
   // 오디오 로드 시 이벤트 리스너 추가
@@ -98,53 +112,49 @@ export default function AudioPlayer() {
       {/* 숨겨진 오디오 요소 */}
       <audio ref={audioRef} src="/audio/wedding-music.mp3" preload="auto" loop />
 
-      {/* 초기 재생 안내 메시지 */}
-      {showPlayPrompt && (
-        <div className="fixed top-0 left-0 right-0 bg-[#ee7685] text-white p-3 z-50 flex justify-between items-center">
-          <p className="text-sm">💕 웨딩 음악과 함께 청첩장을 감상해보세요!</p>
-          <button
-            onClick={dismissPlayPrompt}
-            className="text-white text-sm bg-white/20 px-2 py-1 rounded"
-          >
-            확인
-          </button>
+      {/* 상단 컨트롤러 */}
+      <div className="fixed top-0 left-0 right-0 bg-[#ee7685] text-white p-3 z-50 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <Music className="h-4 w-4" />
+          <p className="text-sm">
+            {showPlayPrompt ? "💕 웨딩 음악과 함께 청첩장을 감상해보세요!" : "웨딩 음악"}
+          </p>
         </div>
-      )}
 
-      {/* 플레이어 UI - 화면 하단에 고정 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-md border-t border-[#ee7685]/20 p-2 z-50">
-        <div className="max-w-md mx-auto flex items-center justify-between">
+        {showPlayPrompt ? (
+          <button
+            onClick={startPlayback}
+            className="text-white text-sm bg-white/20 px-3 py-1 rounded-full"
+          >
+            재생하기
+          </button>
+        ) : (
           <div className="flex items-center gap-2">
-            <Music className="h-4 w-4 text-[#ee7685]" />
-            <span className="text-sm text-[#ee7685] font-medium">웨딩 음악</span>
-          </div>
-
-          <div className="flex items-center gap-3">
             {/* 음소거 버튼 */}
             <button
               onClick={toggleMute}
-              className="p-2 rounded-full bg-[#ee7685]/10 hover:bg-[#ee7685]/20 transition-colors"
+              className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
             >
               {isMuted ? (
-                <VolumeX className="h-4 w-4 text-[#ee7685]" />
+                <VolumeX className="h-4 w-4 text-white" />
               ) : (
-                <Volume2 className="h-4 w-4 text-[#ee7685]" />
+                <Volume2 className="h-4 w-4 text-white" />
               )}
             </button>
 
             {/* 재생/일시정지 버튼 */}
             <button
               onClick={togglePlay}
-              className="p-2 rounded-full bg-[#ee7685] hover:bg-[#d35e6c] transition-colors"
+              className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
             >
               {isPlaying ? (
-                <Pause className="h-5 w-5 text-white" />
+                <Pause className="h-4 w-4 text-white" />
               ) : (
-                <Play className="h-5 w-5 text-white" />
+                <Play className="h-4 w-4 text-white" />
               )}
             </button>
           </div>
-        </div>
+        )}
       </div>
     </>
   );

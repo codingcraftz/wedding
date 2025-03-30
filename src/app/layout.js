@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "모바일 청첩장",
-  description: "결혼식에 초대합니다",
+  title: "손승호 ❤️ 고유미 결혼합니다.",
+  description: "25. 5. 31(토) 2:10PM",
 };
 
 export default function RootLayout({ children }) {

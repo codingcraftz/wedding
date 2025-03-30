@@ -4,10 +4,9 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { Toaster, toast } from "react-hot-toast";
-import { RefreshCw, MessageSquare, Trash2 } from "lucide-react";
+import { RefreshCw, MessageSquare, Trash2, X } from "lucide-react";
 import { Noto_Sans_KR } from "next/font/google";
 
-import { Card, CardHeader, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -49,15 +48,28 @@ export default function Guestbook() {
   const [deleteInfo, setDeleteInfo] = useState({ id: null, password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const fetchMessages = async () => {
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 5;
+
+  const fetchMessages = async (page = 1) => {
     setIsLoading(true);
-    const { data, error } = await supabase
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    const { data, error, count } = await supabase
       .from("guestbook")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) toast.error("불러오기 실패");
-    else setMessages(data || []);
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (error) {
+      toast.error("불러오기 실패");
+    } else {
+      setMessages(data || []);
+      setTotalPages(Math.ceil((count || 0) / pageSize));
+    }
     setIsLoading(false);
   };
 
@@ -82,7 +94,8 @@ export default function Guestbook() {
       setMessage("");
       setPassword("");
       setIsOpen(false);
-      fetchMessages();
+      fetchMessages(1);
+      setPage(1);
     }
     setIsSubmitting(false);
   };
@@ -106,154 +119,154 @@ export default function Guestbook() {
     else {
       toast.success("삭제 완료");
       setDeleteInfo({ id: null, password: "" });
-      fetchMessages();
+      setIsDeleteDialogOpen(false);
+      fetchMessages(page);
     }
   };
 
   const formatDate = (d) => {
     const date = new Date(d);
-    return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
+    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(
+      date.getDate()
+    ).padStart(2, "0")} ${date.toTimeString().slice(0, 5)}`;
   };
 
   useEffect(() => {
-    fetchMessages();
-  }, []);
+    fetchMessages(page);
+  }, [page]);
 
   return (
-    <div className={`px-4 py-10 ${notoSans.className}`}>
+    <div className={`px-2 py-10 max-w-md mx-auto w-full ${notoSans.className}`}>
       <Toaster position="top-center" />
 
       <div className="mb-6 text-center">
-        <div className="text-white bg-[#ee7685] inline-block font-bold px-6 py-2 rounded-full text-xl">
-          축하의 한마디
-        </div>
+        <p className="text-sm tracking-wide text-gray-400 uppercase">GUEST BOOK</p>
+        <h2 className="font-semibold text-lg mt-2">따뜻한 마음으로 축복해 주세요</h2>
       </div>
 
-      <div className="max-w-md mx-auto mb-4 text-right">
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-[#ee7685] hover:bg-[#d35e6c]">
-              <MessageSquare className="mr-2 h-4 w-4" /> 글 남기기
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[90vw] sm:max-w-[450px]">
-            <DialogHeader>
-              <DialogTitle>축하 메시지 작성</DialogTitle>
-              <DialogDescription>신랑신부에게 축하 메시지를 남겨주세요.</DialogDescription>
-            </DialogHeader>
-            <form onSubmit={saveMessage} className="space-y-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">이름</Label>
-                <Input
-                  id="name"
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="message">메시지</Label>
-                <Textarea
-                  id="message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">비밀번호</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <DialogFooter className="pt-2">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-[#ee7685] hover:bg-[#d35e6c]"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 animate-spin mr-2" /> 저장 중...
-                    </>
-                  ) : (
-                    "메시지 저장"
-                  )}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <div className="max-w-md mx-auto space-y-4">
+      <div className="space-y-3">
         {isLoading ? (
           <div className="flex justify-center py-10">
-            <RefreshCw className="h-6 w-6 animate-spin text-[#ee7685]" />
+            <RefreshCw className="h-6 w-6 animate-spin text-gray-400" />
           </div>
         ) : messages.length > 0 ? (
           messages.map((item) => (
-            <Card key={item.id}>
-              <CardHeader className="flex justify-between bg-[#ee7685]/10 px-4 py-3">
-                <CardTitle className="text-base">{item.author}</CardTitle>
-                <span className="text-sm text-gray-500">{formatDate(item.created_at)}</span>
-              </CardHeader>
-              <CardContent className="px-4 py-2">
-                <p className="whitespace-pre-wrap text-gray-800">{item.message}</p>
-              </CardContent>
-              <CardFooter className="bg-gray-50 px-4 py-2 flex justify-end">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-gray-500 hover:text-red-500"
-                      onClick={() => setDeleteInfo({ ...deleteInfo, id: item.id })}
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" /> 삭제
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent className="max-w-[90vw]">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>메시지 삭제</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        해당 메시지를 삭제하려면 비밀번호를 입력해주세요.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <Input
-                      type="password"
-                      placeholder="비밀번호"
-                      value={deleteInfo.password}
-                      onChange={(e) => setDeleteInfo({ ...deleteInfo, password: e.target.value })}
-                    />
-                    <AlertDialogFooter className="pt-4">
-                      <AlertDialogCancel>취소</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={deleteMessage}
-                        className="bg-red-500 hover:bg-red-600"
-                      >
-                        삭제하기
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </CardFooter>
-            </Card>
+            <div
+              key={item.id}
+              className="relative w-full rounded-xl border border-gray-200 px-4 py-3 bg-white shadow-sm"
+            >
+              <button
+                onClick={() => {
+                  setDeleteInfo({ id: item.id, password: "" });
+                  setIsDeleteDialogOpen(true);
+                }}
+                className="absolute right-3 top-3 text-gray-400 hover:text-red-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <p className="font-semibold text-gray-800 mb-1">{item.author}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{item.message}</p>
+              <div className="text-xs text-gray-400 mt-2 text-right">
+                {formatDate(item.created_at)}
+              </div>
+            </div>
           ))
         ) : (
-          <div className="text-center text-gray-500 py-10">방명록이 아직 없습니다.</div>
+          <p className="text-center text-gray-500 py-10">방명록이 아직 없습니다.</p>
         )}
 
-        <div className="flex justify-center pt-4">
-          <Button variant="outline" onClick={fetchMessages} className="text-gray-500">
-            <RefreshCw className="mr-2 h-4 w-4" /> 새로고침
+        {page < totalPages && (
+          <Button variant="outline" onClick={() => setPage((p) => p + 1)} className="w-full">
+            더 보기
           </Button>
-        </div>
+        )}
+
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="w-full bg-black text-white hover:bg-gray-800"
+        >
+          작성하기
+        </Button>
       </div>
+
+      {/* 작성 모달 */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-[90vw] sm:max-w-[450px] bg-white px-4">
+          <DialogHeader>
+            <DialogTitle>축하 메시지 작성</DialogTitle>
+            <DialogDescription>신랑신부에게 축하 메시지를 남겨주세요.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={saveMessage} className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">이름</Label>
+              <Input
+                id="name"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="message">메시지</Label>
+              <Textarea
+                id="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">비밀번호</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <DialogFooter className="pt-2">
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-[#ee7685] hover:bg-[#d35e6c]"
+              >
+                {isSubmitting ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 animate-spin mr-2" /> 저장 중...
+                  </>
+                ) : (
+                  "메시지 저장"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* 삭제 다이얼로그 */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent className="max-w-[90vw] bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>메시지 삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              해당 메시지를 삭제하려면 비밀번호를 입력해주세요.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            type="password"
+            placeholder="비밀번호"
+            value={deleteInfo.password}
+            onChange={(e) => setDeleteInfo({ ...deleteInfo, password: e.target.value })}
+          />
+          <AlertDialogFooter className="pt-4">
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={deleteMessage} className="bg-red-500 hover:bg-red-600">
+              삭제하기
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

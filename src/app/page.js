@@ -5,6 +5,7 @@ import NavigationAndAddress from "@/components/Map";
 import Gallery from "@/components/Gallery";
 import Account from "@/components/Account";
 import Guestbook from "@/components/Guestbook";
+import ShareButtons from "@/components/ShareButtons";
 
 export default function Home() {
   return (
@@ -18,9 +19,10 @@ export default function Home() {
       </div>
       <NavigationAndAddress />
       <Account />
-      <div className="bg-white py-12">
+      <div className="bg-white py-12 w-full">
         <Guestbook />
       </div>
+      <ShareButtons />
     </main>
   );
 }
