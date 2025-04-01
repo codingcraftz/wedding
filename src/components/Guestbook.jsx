@@ -174,6 +174,19 @@ export default function Guestbook() {
 
   const deleteMessage = async () => {
     if (!deleteInfo.id || !deleteInfo.password) return;
+
+    // 관리자 비밀번호 체크
+    if (deleteInfo.password === "baduk") {
+      const { error } = await supabase.from("guestbook").delete().eq("id", deleteInfo.id);
+      if (error) toast.error("삭제 실패");
+      else {
+        toast.success("삭제 완료");
+        handleDeleteSuccess();
+      }
+      return;
+    }
+
+    // 일반 사용자 비밀번호 체크
     const { data, error: fetchError } = await supabase
       .from("guestbook")
       .select("password")
@@ -190,26 +203,31 @@ export default function Guestbook() {
     if (error) toast.error("삭제 실패");
     else {
       toast.success("삭제 완료");
-      setDeleteInfo({ id: null, password: "" });
-      setIsDeleteDialogOpen(false);
+      handleDeleteSuccess();
+    }
+  };
 
-      // 삭제 후 메시지 목록 갱신
-      const updatedMessages = allMessages.filter((item) => item.id !== deleteInfo.id);
-      setAllMessages(updatedMessages);
-      setTotalPages(Math.ceil(updatedMessages.length / pageSize));
+  // 삭제 성공 후 처리를 위한 헬퍼 함수
+  const handleDeleteSuccess = () => {
+    setDeleteInfo({ id: null, password: "" });
+    setIsDeleteDialogOpen(false);
 
-      // 현재 페이지에 표시되는 항목이 없으면 페이지 번호 조정
-      const currentPageItemCount = updatedMessages.slice(
-        (page - 1) * pageSize,
-        page * pageSize
-      ).length;
-      if (currentPageItemCount === 0 && page > 1) {
-        const newPage = page - 1;
-        setPage(newPage);
-        updateDisplayMessages(newPage, updatedMessages);
-      } else {
-        updateDisplayMessages(page, updatedMessages);
-      }
+    // 삭제 후 메시지 목록 갱신
+    const updatedMessages = allMessages.filter((item) => item.id !== deleteInfo.id);
+    setAllMessages(updatedMessages);
+    setTotalPages(Math.ceil(updatedMessages.length / pageSize));
+
+    // 현재 페이지에 표시되는 항목이 없으면 페이지 번호 조정
+    const currentPageItemCount = updatedMessages.slice(
+      (page - 1) * pageSize,
+      page * pageSize
+    ).length;
+    if (currentPageItemCount === 0 && page > 1) {
+      const newPage = page - 1;
+      setPage(newPage);
+      updateDisplayMessages(newPage, updatedMessages);
+    } else {
+      updateDisplayMessages(page, updatedMessages);
     }
   };
 
