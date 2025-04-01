@@ -5,11 +5,11 @@ import Image from "next/image";
 
 const images = [
   { src: "/main_1.png" },
-  { src: "/main_2.png" },
-  { src: "/main_3.png", marginBottom: "mb-16" },
-  { src: "/main_4.png", marginBottom: "mb-16" },
-  { src: "/main_5.png", marginBottom: "mb-16" },
-  { src: "/main_6.png", marginBottom: "mb-24" },
+  { src: "/main_2.png", paddingTop: "pt-6 bg-white" },
+  { src: "/main_3.png", paddingTop: "pt-6 bg-white", marginBottom: "pb-16 bg-white" },
+  { src: "/main_4.png", paddingTop: "pt-6 bg-white", marginBottom: "pb-16 bg-white" },
+  { src: "/main_5.png", paddingTop: "pt-6 bg-white", marginBottom: "pb-16" },
+  { src: "/main_6.png", paadingTop: "pt-6", marginBottom: "pb-24 " },
 ];
 
 export default function MainContent() {

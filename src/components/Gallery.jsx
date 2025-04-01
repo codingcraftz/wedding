@@ -34,7 +34,7 @@ export default function GalleryGrid() {
   return (
     <section className="w-full px-4">
       <div className="text-center mb-6">
-        <p className="uppercase text-xs text-gray-400 tracking-widest py-4">Gallery</p>
+        <p className="uppercase text-5xl tracking-widest py-4">📷</p>
         <h2 className="text-base font-semibold">우리가 함께 한 모든 순간</h2>
       </div>
 

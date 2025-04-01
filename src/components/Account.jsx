@@ -6,6 +6,13 @@ import { Copy, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 
 const groomAccounts = [
   {
+    name: "손승호",
+    bank: "우리은행",
+    accountNumber: "1002954989821",
+    tossUrl: `supertoss://send?bank=우리은행&accountNo=1002954989821&origin=청첩장`,
+    kakaoPayUrl: `https://qr.kakaopay.com/Ej9QfqGLl`,
+  },
+  {
     name: "손삼익",
     bank: "국민은행",
     accountNumber: "640-21-0172-719",
@@ -75,8 +82,10 @@ const Account = () => {
                     ? title.includes("신랑")
                       ? "신랑"
                       : "신부"
-                    : title.includes("신랑")
-                    ? "아버지"
+                    : i === 1
+                    ? title.includes("신랑")
+                      ? "아버지"
+                      : "어머니"
                     : "어머니"}
                 </span>
                 <span className="text-sm font-medium text-gray-900 text-left">{account.name}</span>

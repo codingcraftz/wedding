@@ -19,25 +19,25 @@ export default function Home() {
         </div>
       </AnimatedSection>
 
-      <AnimatedSection animation="fade-up" delay={50}>
+      <AnimatedSection animation="fade-up" delay={100}>
         <div className="w-full bg-[#fdf1f2] py-12">
           <WeddingCalendar />
         </div>
       </AnimatedSection>
 
-      <AnimatedSection animation="fade-up" delay={50}>
+      <AnimatedSection animation="fade-up" delay={150}>
         <div className="w-full py-12 bg-white">
           <NavigationAndAddress />
         </div>
       </AnimatedSection>
 
-      <AnimatedSection animation="fade-up" delay={50}>
+      <AnimatedSection animation="fade-up" delay={200}>
         <div className="w-full bg-[#fdf1f2] py-12">
           <Account />
         </div>
       </AnimatedSection>
 
-      <AnimatedSection animation="fade-in bg-[]" delay={50}>
+      <AnimatedSection animation="fade-in bg-[]" delay={250}>
         <div className="bg-white w-full py-12">
           <Guestbook />
         </div>
