@@ -124,6 +124,22 @@
     font-family: var(--font-suit), sans-serif;
   }
 
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  div,
+  button,
+  input,
+  textarea,
+  select {
+    font-family: var(--font-suit), sans-serif;
+  }
+
   /* 이미지 간 여백 제거 */
   img {
     display: block;
@@ -142,6 +158,7 @@
   /* 스크롤 부드럽게 */
   html {
     scroll-behavior: smooth;
+    font-family: var(--font-suit), sans-serif;
   }
 }
 

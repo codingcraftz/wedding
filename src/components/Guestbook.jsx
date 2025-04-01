@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { Toaster, toast } from "react-hot-toast";
 import { RefreshCw, MessageSquare, Trash2, X } from "lucide-react";
-import { Noto_Sans_KR } from "next/font/google";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,8 +35,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
-
-const notoSans = Noto_Sans_KR({ weight: ["400", "700"], subsets: ["latin"] });
 
 export default function Guestbook() {
   const [isOpen, setIsOpen] = useState(false);
@@ -136,12 +133,12 @@ export default function Guestbook() {
   }, [page]);
 
   return (
-    <div className={`px-2 py-10 max-w-md mx-auto w-full ${notoSans.className}`}>
+    <div className="px-2 py-10 max-w-md mx-auto w-full">
       <Toaster position="top-center" />
 
       <div className="mb-6 text-center">
-        <p className="text-sm tracking-wide text-gray-400 uppercase">GUEST BOOK</p>
-        <h2 className="font-semibold text-lg mt-2">따뜻한 마음으로 축복해 주세요</h2>
+        <p className="text-xs tracking-wide text-gray-400 uppercase">GUEST BOOK</p>
+        <h2 className="font-semibold text-xl mt-2 text-[#ee7685]">따뜻한 마음으로 축복해 주세요</h2>
       </div>
 
       <div className="space-y-3">

@@ -13,30 +13,30 @@ export default function Home() {
     <main className="flex flex-col items-center min-h-screen bg-white overflow-x-hidden w-full">
       <MainContent />
 
-      <AnimatedSection animation="fade-up" delay={100}>
-        <div className="bg-white py-12 w-full">
+      <AnimatedSection animation="fade-up" delay={50}>
+        <div className="bg-white w-full pt-8 pb-16">
           <Gallery />
         </div>
       </AnimatedSection>
 
-      <AnimatedSection animation="fade-up" delay={200}>
-        <div className="py-6 w-full">
+      <AnimatedSection animation="fade-up" delay={50}>
+        <div className="w-full pb-16">
           <WeddingCalendar />
         </div>
       </AnimatedSection>
 
-      <AnimatedSection animation="fade-up" delay={300}>
+      <AnimatedSection animation="fade-up" delay={50}>
         <NavigationAndAddress />
       </AnimatedSection>
 
-      <AnimatedSection animation="fade-up" delay={400}>
-        <div className="py-12 w-full">
+      <AnimatedSection animation="fade-up" delay={50}>
+        <div className="w-full">
           <Account />
         </div>
       </AnimatedSection>
 
-      <AnimatedSection animation="fade-in" delay={500}>
-        <div className="bg-white py-12 w-full">
+      <AnimatedSection animation="fade-in" delay={50}>
+        <div className="bg-white w-full">
           <Guestbook />
         </div>
       </AnimatedSection>

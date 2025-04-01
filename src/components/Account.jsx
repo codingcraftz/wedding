@@ -3,23 +3,7 @@
 import { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { Copy, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
-import { Noto_Sans_KR } from "next/font/google";
-import { Gamja_Flower } from "next/font/google";
 
-// 노토 산스 폰트 (무난하고 가독성 좋은 폰트)
-const notoSans = Noto_Sans_KR({
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const gamjaFlower = Gamja_Flower({
-  weight: ["400"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
-// 신랑측 계좌 정보 (두 계좌)
 const groomAccounts = [
   {
     name: "손삼익",
@@ -37,7 +21,6 @@ const groomAccounts = [
   },
 ];
 
-// 신부측 계좌 정보
 const brideAccounts = [
   {
     name: "고상두",
@@ -59,95 +42,70 @@ const Account = () => {
   const [expandedGroomSection, setExpandedGroomSection] = useState(true);
   const [expandedBrideSection, setExpandedBrideSection] = useState(true);
 
-  // 복사 기능
   const copyToClipboard = async (text, name) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success(`${name}님 계좌번호가 복사되었습니다`, {
-        style: {
-          background: "#333",
-          color: "#fff",
-        },
+      toast.success(`${name}님의 계좌번호가 복사되었습니다`, {
+        style: { background: "#333", color: "#fff" },
         duration: 2000,
       });
-    } catch (err) {
-      console.error("복사 실패:", err);
+    } catch {
       toast.error("복사에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
-  // 송금 기능
-  const handleTossPayment = (url) => {
-    window.location.href = url;
-  };
-
-  const handleKakaoPayPayment = (url) => {
-    window.location.href = url;
-  };
-
-  // 계좌 섹션 렌더링 함수
-  const renderAccountSection = (accounts, isGroom, expandedState, setExpandedState) => (
-    <div className="mb-6 bg-white rounded-xl shadow-sm overflow-hidden border border-[#ee7685]/20">
-      {/* 섹션 헤더 - 클릭 시 확장/축소 */}
+  const renderAccountBox = (title, accounts, expanded, setExpanded) => (
+    <div className="bg-white border mt-4">
       <button
-        className="w-full flex items-center justify-between p-4 text-left bg-[#ee7685]/5"
-        onClick={() => setExpandedState(!expandedState)}
+        className="w-full flex items-center justify-between px-4 py-3 border-b"
+        onClick={() => setExpanded(!expanded)}
       >
-        <div className="flex items-center gap-2">
-          <div className="w-1 h-10 bg-[#ee7685] rounded-full"></div>
-          <div>
-            <h3 className="text-[#ee7685] font-bold text-lg">
-              {isGroom ? "신랑측" : "신부측"} 계좌번호
-            </h3>
-            <p className="text-gray-500 text-sm">{accounts.length}개의 계좌</p>
-          </div>
-        </div>
-        {expandedState ? (
-          <ChevronUp className="text-gray-500" size={20} />
-        ) : (
-          <ChevronDown className="text-gray-500" size={20} />
-        )}
+        <strong className="text-sm font-bold text-gray-800">{title}</strong>
+        {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </button>
-
-      {/* 확장된 내용 */}
-      {expandedState && (
-        <div className="p-4 border-t border-[#ee7685]/10">
-          {accounts.map((account, index) => (
-            <div key={index} className={`${index > 0 ? "mt-6 pt-6 border-t border-gray-100" : ""}`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="font-medium text-gray-800">{account.name}</div>
-                <div className="text-sm text-gray-500">{account.bank}</div>
-              </div>
-
-              <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg mb-3">
-                <span className="text-gray-800 font-medium tracking-wide">
-                  {account.accountNumber}
+      {expanded && (
+        <div className="divide-y">
+          {accounts.map((account, i) => (
+            <div key={i} className="px-4 py-4 flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">
+                  {i === 0
+                    ? title.includes("신랑")
+                      ? "신랑"
+                      : "신부"
+                    : title.includes("신랑")
+                    ? "아버지"
+                    : "어머니"}
                 </span>
+                <span className="text-sm font-medium text-gray-900">{account.name}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">{account.bank}</span>
+                <span className="text-sm font-medium text-gray-900">{account.accountNumber}</span>
+              </div>
+              <div className="mt-2 flex justify-end">
                 <button
                   onClick={() => copyToClipboard(account.accountNumber, account.name)}
-                  className="bg-white hover:bg-gray-100 text-[#ee7685] p-2 rounded-lg border border-[#ee7685]/30 flex items-center justify-center transition-colors"
-                  aria-label="계좌번호 복사"
+                  className="bg-gray-100 text-gray-800 px-3 py-1.5 text-sm rounded hover:bg-gray-200"
                 >
-                  <Copy size={16} />
+                  복사하기
                 </button>
               </div>
-
-              {/* 송금 버튼 영역 */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleTossPayment(account.tossUrl)}
+              <div className="mt-2 flex gap-2">
+                <a
+                  href={account.tossUrl}
                   className="flex-1 py-2 px-3 bg-[#3182F6] hover:bg-[#2272E6] text-white rounded-lg text-sm flex items-center justify-center gap-1 transition-colors"
                 >
                   <span>토스로 송금</span>
                   <ExternalLink size={14} />
-                </button>
-                <button
-                  onClick={() => handleKakaoPayPayment(account.kakaoPayUrl)}
+                </a>
+                <a
+                  href={account.kakaoPayUrl}
                   className="flex-1 py-2 px-3 bg-[#FFEB00] hover:bg-[#FFDD00] text-[#3C1E1E] rounded-lg text-sm flex items-center justify-center gap-1 transition-colors"
                 >
                   <span>카카오페이</span>
                   <ExternalLink size={14} />
-                </button>
+                </a>
               </div>
             </div>
           ))}
@@ -157,39 +115,31 @@ const Account = () => {
   );
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center py-12 px-5 ${notoSans.className} bg-[#fdf1f2] w-full`}
-    >
-      {/* Toast Container */}
-      <Toaster position="top-center" reverseOrder={false} />
-
-      {/* 타이틀 */}
-      <div className="animate-slide-up mb-8">
-        <div
-          className={`text-white bg-[#ee7685] font-bold px-6 py-2 rounded-full text-xl ${gamjaFlower.className}`}
-        >
-          마음 전하실 곳
-        </div>
+    <div className="w-full max-w-md mx-auto px-4 py-10 text-center">
+      <Toaster position="top-center" />
+      <div className="text-center mb-6">
+        <p className="uppercase text-xs text-gray-400 tracking-widest py-4">THANKS TO</p>
+        <h2 className="text-base font-semibold">마음 전하는 곳</h2>
       </div>
+      <p className="text-sm text-gray-700 leading-relaxed">
+        직접 축하를 전하지 못하는 분들을 위해 <br />
+        부득이하게 계좌번호를 기재하게 되었습니다.
+        <br />
+        넓은 마음으로 양해 부탁드립니다.
+      </p>
 
-      {/* 계좌 정보 컨테이너 */}
-      <div className="w-full max-w-md">
-        {/* 신랑측 계좌 섹션 */}
-        {renderAccountSection(groomAccounts, true, expandedGroomSection, setExpandedGroomSection)}
-
-        {/* 신부측 계좌 섹션 */}
-        {renderAccountSection(brideAccounts, false, expandedBrideSection, setExpandedBrideSection)}
-
-        {/* 안내문구 */}
-        <div className="text-center text-gray-500 text-sm mt-8 bg-white p-4 rounded-lg">
-          <p>정성어린 축하의 마음 감사합니다.</p>
-          <p className="mt-2 text-xs text-gray-400">
-            계좌번호 옆 아이콘을 클릭하면 복사됩니다.
-            <br />
-            토스, 카카오페이 버튼으로 빠르게 송금하실 수 있습니다.
-          </p>
-        </div>
-      </div>
+      {renderAccountBox(
+        "신랑 측 계좌번호",
+        groomAccounts,
+        expandedGroomSection,
+        setExpandedGroomSection
+      )}
+      {renderAccountBox(
+        "신부 측 계좌번호",
+        brideAccounts,
+        expandedBrideSection,
+        setExpandedBrideSection
+      )}
     </div>
   );
 };

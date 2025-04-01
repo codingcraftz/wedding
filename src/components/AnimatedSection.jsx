@@ -23,7 +23,7 @@ export default function AnimatedSection({
       {
         root: null,
         rootMargin: "0px",
-        threshold: 0.1, // 10% 정도 보이면 애니메이션 트리거
+        threshold: 0.05, // 10% 정도 보이면 애니메이션 트리거
       }
     );
 

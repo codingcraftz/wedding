@@ -59,82 +59,86 @@ export default function WeddingCalendar() {
   const dayText = ["일", "월", "화", "수", "목", "금", "토"][weddingDate.getDay()];
 
   return (
-    <section className="w-full px-4 py-12 text-center">
-      <p className="uppercase text-sm tracking-widest text-gray-400">WEDDING DATE</p>
-      <h2 className={`text-xl font-semibold mt-2`}>
-        {year}년 {month}월 {date}일 {dayText}요일 오전 11시
-      </h2>
+    <div>
+      <section className="w-full px-8 text-center">
+        <div className="text-center mb-6">
+          <p className="uppercase text-xs text-gray-400 tracking-widest py-4">WEDDING DATE</p>
+          <h2 className="text-base font-semibold">
+            {year}년 {month}월 {date}일 {dayText}요일 오후 1시 20분
+          </h2>
+        </div>
 
-      {/* 달력 */}
-      <div className="grid grid-cols-7 gap-2 text-base mt-6">
-        {["일", "월", "화", "수", "목", "금", "토"].map((d, i) => (
-          <div key={i} className="text-[#111111] font-medium">
-            {d}
-          </div>
-        ))}
+        {/* 달력 */}
+        <div className="grid grid-cols-7 gap-2 text-base mt-6">
+          {["일", "월", "화", "수", "목", "금", "토"].map((d, i) => (
+            <div key={i} className="text-[#111111] font-medium">
+              {d}
+            </div>
+          ))}
 
-        {calendar.map((week, i) => (
-          <React.Fragment key={i}>
-            {week.map((day, j) => (
-              <div
-                key={j}
-                className={`aspect-square flex items-center justify-center text-sm rounded-full transition-all ${
-                  day === date ? "bg-[#444444] text-white relative" : "text-[#111111]"
-                }`}
-              >
-                {day === date ? (
-                  <div className="flex items-center gap-1">
-                    <Heart className="w-3 h-3 fill-white text-white" />
-                    {day}
-                  </div>
-                ) : (
-                  day || ""
-                )}
-              </div>
-            ))}
-          </React.Fragment>
-        ))}
-      </div>
+          {calendar.map((week, i) => (
+            <React.Fragment key={i}>
+              {week.map((day, j) => (
+                <div
+                  key={j}
+                  className={`aspect-square flex items-center justify-center text-sm rounded-full transition-all ${
+                    day === date ? "bg-[#ee7685] text-white relative" : "text-[#111111]"
+                  }`}
+                >
+                  {day === date ? (
+                    <div className="flex items-center gap-1">
+                      <Heart className="w-3 h-3 fill-white text-white" />
+                      {day}
+                    </div>
+                  ) : (
+                    day || ""
+                  )}
+                </div>
+              ))}
+            </React.Fragment>
+          ))}
+        </div>
+      </section>
 
       {/* 카운트다운 박스 */}
       <div
-        className="rounded-xl mt-10 overflow-hidden relative text-white"
+        className="overflow-hidden relative text-white"
         style={{
           backgroundImage: "url('/flowers.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="backdrop-brightness-[0.4] py-6 px-4">
-          <div className="flex justify-center items-center gap-4 text-center font-mono text-lg">
-            <CountdownBox label="Days" value={timeLeft.days} />
-            <span className="text-xl">:</span>
-            <CountdownBox label="Hours" value={timeLeft.hours} />
-            <span className="text-xl">:</span>
-            <CountdownBox label="Minutes" value={timeLeft.minutes} />
-            <span className="text-xl">:</span>
-            <CountdownBox label="Seconds" value={timeLeft.seconds} />
-          </div>
+        <div className="backdrop-brightness-[0.5] py-10 flex justify-center items-center gap-6">
+          <CountdownBox label="일" value={timeLeft.days} showColon />
+          <CountdownBox label="시간" value={timeLeft.hours} showColon />
+          <CountdownBox label="분" value={timeLeft.minutes} showColon />
+          <CountdownBox label="초" value={timeLeft.seconds} showColon={false} />
         </div>
       </div>
 
       {/* 설명 텍스트 */}
-      <p className="mt-6 text-sm text-gray-800">
-        <span className="font-medium text-[#ee7685]">형석</span> ❤️{" "}
-        <span className="font-medium text-[#ee7685]">은비</span> 님의 결혼식이{" "}
+      <p className="mt-6 text-sm text-gray-800 text-center">
+        <span className="font-medium text-[#ee7685]">손삼익</span> ❤️{" "}
+        <span className="font-medium text-[#ee7685]">고유미</span> 님의 결혼식이{" "}
         <span className="font-semibold text-black">{timeLeft.days}</span>일 남았습니다.
       </p>
-    </section>
+    </div>
   );
 }
 
-function CountdownBox({ label, value }) {
+function CountdownBox({ label, value, showColon }) {
   return (
-    <div>
-      <div className="bg-black/60 px-4 py-2 rounded-md text-2xl font-bold">
+    <div className="relative inline-block text-center">
+      <div className="bg-black/50 w-16 h-16 rounded-lg flex items-center justify-center text-white text-3xl font-semibold relative">
         {String(value).padStart(2, "0")}
+        {showColon && (
+          <span className="absolute right-[-13px] top-1/2 -translate-y-5 text-2xl font-semibold">
+            :
+          </span>
+        )}
       </div>
-      <div className="text-xs mt-1">{label}</div>
+      <div className="text-xs mt-1 text-white">{label}</div>
     </div>
   );
 }
