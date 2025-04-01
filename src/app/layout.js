@@ -31,7 +31,7 @@ const suit = localFont({
 });
 
 export const metadata = {
-  title: "손삼익 ❤️ 고유미 결혼합니다.",
+  title: "손승호 ❤️ 고유미 결혼합니다.",
   description: "25. 5. 31(토) 1:20PM",
 };
 

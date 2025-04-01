@@ -22,8 +22,8 @@ export default function AnimatedSection({
       },
       {
         root: null,
-        rootMargin: "0px",
-        threshold: 0.05, // 10% 정도 보이면 애니메이션 트리거
+        rootMargin: "0px 0px -8% 0px", // 뷰포트 하단 위로 30% 일찍 트리거
+        threshold: 0, // 혹은 0.01
       }
     );
 

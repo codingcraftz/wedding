@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
 import Script from "next/script";
 import toast, { Toaster } from "react-hot-toast";
-import { Copy } from "lucide-react";
+import { Copy, Loader } from "lucide-react";
 import { HALL_NAME, HALL_ADDRESS, HALL_LAT, HALL_LNG } from "@/lib/constants";
 
 export default function NavigationAndAddress() {
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [loadingApp, setLoadingApp] = useState({ naver: false, kakao: false, tmap: false });
 
   // 네비게이션 앱 실행 URL
   const kakaoNaviUrl = `kakaomap://look?p=${HALL_LAT},${HALL_LNG}`;
@@ -16,6 +17,15 @@ export default function NavigationAndAddress() {
     HALL_NAME
   )}&appname=wedding-app`;
   const tMapNaviUrl = `tmap://route?goalname=${HALL_NAME}&goalx=${HALL_LNG}&goaly=${HALL_LAT}`;
+
+  // 웹 URL (앱이 없을 경우 사용)
+  const kakaoWebUrl = `https://map.kakao.com/link/map/${encodeURIComponent(
+    HALL_NAME
+  )},${HALL_LAT},${HALL_LNG}`;
+  const naverWebUrl = `https://map.naver.com/v5/search/${encodeURIComponent(HALL_ADDRESS)}`;
+  const tMapWebUrl = `https://apis.openapi.sk.com/tmap/app/routes?endX=${HALL_LNG}&endY=${HALL_LAT}&endName=${encodeURIComponent(
+    HALL_NAME
+  )}`;
 
   const copyAddress = async () => {
     try {
@@ -26,6 +36,47 @@ export default function NavigationAndAddress() {
     } catch {
       toast.error("주소 복사에 실패했습니다.");
     }
+  };
+
+  // 앱 실행 함수
+  const handleAppNavigation = (type, appUrl, webUrl) => {
+    // 로딩 상태 설정
+    setLoadingApp({ ...loadingApp, [type]: true });
+
+    // 현재 시간 기록
+    const startTime = new Date().getTime();
+
+    // 앱 URL 열기 시도
+    window.location.href = appUrl;
+
+    // 앱 설치 여부 확인을 위한 타이머
+    const timer = setTimeout(() => {
+      // 3초 이상 걸렸다면 앱이 설치되지 않은 것으로 간주
+      const endTime = new Date().getTime();
+      if (endTime - startTime > 2000) {
+        // 앱이 열리지 않았으면 웹 버전으로 이동
+        window.location.href = webUrl;
+        toast.error(
+          `${
+            type === "naver" ? "네이버 지도" : type === "kakao" ? "카카오맵" : "티맵"
+          } 앱이 설치되어 있지 않습니다.`,
+          {
+            style: { background: "#333", color: "#fff" },
+          }
+        );
+      }
+      setLoadingApp({ ...loadingApp, [type]: false });
+    }, 2500);
+
+    // 페이지 이탈 시 타이머 정리
+    window.addEventListener(
+      "pagehide",
+      () => {
+        clearTimeout(timer);
+        setLoadingApp({ ...loadingApp, [type]: false });
+      },
+      { once: true }
+    );
   };
 
   return (
@@ -66,33 +117,42 @@ export default function NavigationAndAddress() {
       </div>
 
       <div className="grid grid-cols-3 gap-4 mt-6 w-full">
-        <a
-          href={naverNaviUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex flex-col items-center justify-center border p-3 rounded-xl hover:bg-gray-50"
+        <button
+          onClick={() => handleAppNavigation("naver", naverNaviUrl, naverWebUrl)}
+          className="flex flex-col items-center justify-center border p-3 rounded-xl hover:bg-gray-50 relative"
         >
+          {loadingApp.naver ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 rounded-xl">
+              <Loader className="w-5 h-5 animate-spin text-gray-600" />
+            </div>
+          ) : null}
           <img src="/maps/naver_map.png" alt="네이버 지도" className="w-6 h-6 mb-1" />
           <span className="text-xs font-medium">네이버 지도</span>
-        </a>
-        <a
-          href={kakaoNaviUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex flex-col items-center justify-center border p-3 rounded-xl hover:bg-gray-50"
+        </button>
+        <button
+          onClick={() => handleAppNavigation("kakao", kakaoNaviUrl, kakaoWebUrl)}
+          className="flex flex-col items-center justify-center border p-3 rounded-xl hover:bg-gray-50 relative"
         >
+          {loadingApp.kakao ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 rounded-xl">
+              <Loader className="w-5 h-5 animate-spin text-gray-600" />
+            </div>
+          ) : null}
           <img src="/maps/kakao_map.png" alt="카카오 내비" className="w-6 h-6 mb-1" />
           <span className="text-xs font-medium">카카오 내비</span>
-        </a>
-        <a
-          href={tMapNaviUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex flex-col items-center justify-center border p-3 rounded-xl hover:bg-gray-50"
+        </button>
+        <button
+          onClick={() => handleAppNavigation("tmap", tMapNaviUrl, tMapWebUrl)}
+          className="flex flex-col items-center justify-center border p-3 rounded-xl hover:bg-gray-50 relative"
         >
+          {loadingApp.tmap ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 rounded-xl">
+              <Loader className="w-5 h-5 animate-spin text-gray-600" />
+            </div>
+          ) : null}
           <img src="/maps/tmap.png" alt="티맵" className="w-6 h-6 mb-1" />
           <span className="text-xs font-medium">티맵</span>
-        </a>
+        </button>
       </div>
 
       <button
@@ -121,9 +181,10 @@ export default function NavigationAndAddress() {
         </div>
         <div>
           <h3 className="font-bold mb-1">지하철 이용시</h3>
-          <p className="text-gray-600">
-            2호선 건대입구역 2번 출구 / 7호선 건대입구역 3번 출구 앞 건물
-          </p>
+          <div>
+            <p className="text-gray-600">2호선 건대입구역 2번 출구</p>
+            <p className="text-gray-600">7호선 건대입구역 3번 출구 앞 건물</p>
+          </div>
         </div>
       </div>
     </div>
