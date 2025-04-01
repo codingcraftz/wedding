@@ -97,10 +97,10 @@ export default function ShareButtons() {
   };
 
   return (
-    <footer className="w-full bg-[#fdf1f2] py-8 border-t border-[#ee7685]/20 pb-16 mt-16">
+    <footer className="w-full bg-[#fdf1f2] py-8 border-t border-[#ee7685]/20 pb-16">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="max-w-md mx-auto px-6">
-        <div className="flex flex-col items-center">
+        {/*<div className="flex flex-col items-center">
           <p className="text-gray-600 mb-6 text-center">소중한 분들에게 청첩장을 공유해보세요</p>
           <div className="flex gap-4">
             <button
@@ -126,7 +126,7 @@ export default function ShareButtons() {
               <span className="font-medium">카카오톡 공유</span>
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* 카피라이트 */}
         <div className="mt-8 text-center text-gray-500 text-xs">

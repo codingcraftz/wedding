@@ -57,11 +57,13 @@ const Account = () => {
   const renderAccountBox = (title, accounts, expanded, setExpanded) => (
     <div className="bg-white border mt-4">
       <button
-        className="w-full flex items-center justify-between px-4 py-3 border-b"
+        className="w-full flex items-center justify-center px-4 py-3 border-b relative"
         onClick={() => setExpanded(!expanded)}
       >
-        <strong className="text-sm font-bold text-gray-800">{title}</strong>
-        {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        <p className="text-sm font-semibold text-gray-800 ">{title}</p>
+        <div className="absolute right-4">
+          {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </div>
       </button>
       {expanded && (
         <div className="divide-y">
@@ -92,7 +94,7 @@ const Account = () => {
                   </button>
                 </div>
               </div>
-              <div className="mt-2 flex gap-2">
+              {/* <div className="mt-2 flex gap-2">
                 <a
                   href={account.tossUrl}
                   className="flex-1 py-2 px-3 bg-[#ee7685] hover:bg-[#d35e6c] text-white rounded-lg text-sm flex items-center justify-center gap-1 transition-colors"
@@ -107,7 +109,7 @@ const Account = () => {
                   <span>카카오페이</span>
                   <ExternalLink size={14} />
                 </a>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
@@ -122,7 +124,7 @@ const Account = () => {
         <p className="uppercase text-xs text-gray-400 tracking-widest py-4">THANKS TO</p>
         <h2 className="text-base font-semibold">마음 전하는 곳</h2>
       </div>
-      <p className="text-sm text-gray-700 leading-relaxed">
+      <p className="text-sm text-gray-700 leading-relaxed pb-4">
         직접 축하를 전하지 못하는 분들을 위해 <br />
         부득이하게 계좌번호를 기재하게 되었습니다.
         <br />

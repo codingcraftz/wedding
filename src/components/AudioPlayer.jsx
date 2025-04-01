@@ -113,7 +113,7 @@ export default function AudioPlayer() {
       <audio ref={audioRef} src="/audio/wedding-music.mp3" preload="auto" loop />
 
       {/* 상단 컨트롤러 */}
-      <div className="fixed top-0 left-0 right-0 bg-[#ee7685] text-white p-3 z-50 flex justify-between items-center">
+      <div className="fixed top-0 left-0 right-0 bg-[#fdf1f2] text-black p-3 z-50 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Music className="h-4 w-4" />
           <p className="text-sm">
@@ -124,7 +124,7 @@ export default function AudioPlayer() {
         {showPlayPrompt ? (
           <button
             onClick={startPlayback}
-            className="text-white text-sm bg-white/20 px-3 py-1 rounded-full"
+            className="text-black text-sm bg-white/20 px-3 py-1 rounded-full"
           >
             재생하기
           </button>
@@ -136,9 +136,9 @@ export default function AudioPlayer() {
               className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
             >
               {isMuted ? (
-                <VolumeX className="h-4 w-4 text-white" />
+                <VolumeX className="h-4 w-4 text-black" />
               ) : (
-                <Volume2 className="h-4 w-4 text-white" />
+                <Volume2 className="h-4 w-4 text-black" />
               )}
             </button>
 
@@ -148,9 +148,9 @@ export default function AudioPlayer() {
               className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
             >
               {isPlaying ? (
-                <Pause className="h-4 w-4 text-white" />
+                <Pause className="h-4 w-4 text-black" />
               ) : (
-                <Play className="h-4 w-4 text-white" />
+                <Play className="h-4 w-4 text-black" />
               )}
             </button>
           </div>

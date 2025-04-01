@@ -69,9 +69,9 @@ export default function WeddingCalendar() {
         </div>
 
         {/* 달력 */}
-        <div className="grid grid-cols-7 gap-2 text-base mt-6">
+        <div className="grid grid-cols-7 gap-1 text-sm mt-6">
           {["일", "월", "화", "수", "목", "금", "토"].map((d, i) => (
-            <div key={i} className="text-[#111111] font-medium">
+            <div key={i} className="text-[#111111]">
               {d}
             </div>
           ))}
@@ -118,8 +118,8 @@ export default function WeddingCalendar() {
       </div>
 
       {/* 설명 텍스트 */}
-      <p className="mt-6 text-sm text-gray-800 text-center">
-        <span className="font-medium text-[#ee7685]">손삼익</span> ❤️{" "}
+      <p className="py-4 text-sm text-gray-800 text-center">
+        <span className="font-medium text-[#ee7685]">손승호</span> ❤️{" "}
         <span className="font-medium text-[#ee7685]">고유미</span> 님의 결혼식이{" "}
         <span className="font-semibold text-black">{timeLeft.days}</span>일 남았습니다.
       </p>

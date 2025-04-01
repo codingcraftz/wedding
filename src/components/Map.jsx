@@ -10,6 +10,13 @@ import { HALL_NAME, HALL_ADDRESS, HALL_LAT, HALL_LNG } from "@/lib/constants";
 export default function NavigationAndAddress() {
   const [mapLoaded, setMapLoaded] = useState(false);
 
+  // 네비게이션 앱 실행 URL
+  const kakaoNaviUrl = `kakaomap://look?p=${HALL_LAT},${HALL_LNG}`;
+  const naverNaviUrl = `nmap://navigation?dlat=${HALL_LAT}&dlng=${HALL_LNG}&dname=${encodeURIComponent(
+    HALL_NAME
+  )}&appname=wedding-app`;
+  const tMapNaviUrl = `tmap://route?goalname=${HALL_NAME}&goalx=${HALL_LNG}&goaly=${HALL_LAT}`;
+
   const copyAddress = async () => {
     try {
       await navigator.clipboard.writeText(HALL_ADDRESS);
@@ -60,7 +67,7 @@ export default function NavigationAndAddress() {
 
       <div className="grid grid-cols-3 gap-4 mt-6 w-full">
         <a
-          href={`https://map.naver.com/v5/search/${encodeURIComponent(HALL_ADDRESS)}`}
+          href={naverNaviUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-col items-center justify-center border p-3 rounded-xl hover:bg-gray-50"
@@ -69,9 +76,7 @@ export default function NavigationAndAddress() {
           <span className="text-xs font-medium">네이버 지도</span>
         </a>
         <a
-          href={`https://map.kakao.com/link/map/${encodeURIComponent(
-            HALL_NAME
-          )},${HALL_LAT},${HALL_LNG}`}
+          href={kakaoNaviUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-col items-center justify-center border p-3 rounded-xl hover:bg-gray-50"
@@ -80,9 +85,7 @@ export default function NavigationAndAddress() {
           <span className="text-xs font-medium">카카오 내비</span>
         </a>
         <a
-          href={`https://apis.openapi.sk.com/tmap/app/routes?endX=${HALL_LNG}&endY=${HALL_LAT}&endName=${encodeURIComponent(
-            HALL_NAME
-          )}`}
+          href={tMapNaviUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-col items-center justify-center border p-3 rounded-xl hover:bg-gray-50"
@@ -92,14 +95,23 @@ export default function NavigationAndAddress() {
         </a>
       </div>
 
-      {/* <button
+      <button
         onClick={copyAddress}
         className="mt-4 inline-flex items-center gap-1 text-sm text-gray-600 px-4 py-2 border rounded-full hover:bg-gray-50"
       >
         <Copy size={14} /> 주소 복사하기
-      </button> */}
+      </button>
 
       <div className="w-full mt-10 text-left text-sm border-t pt-6 space-y-6">
+        <div className="bg-[#fff9f9] p-4 rounded-lg border-l-4 border-[#ee7685]">
+          <h3 className="font-bold mb-1">버스 대절 안내</h3>
+          <p className="text-gray-600">
+            용흥공영주차장(포항시 북구 용흥동 산24-3)에서 2025년 5월 31일(토) 오전 7:30 출발
+          </p>
+          <p className="text-gray-500 text-xs mt-1">
+            ※ 버스는 예약되어 있으니 시간에 맞춰 도착해주세요. 정시에 출발합니다.
+          </p>
+        </div>
         <div>
           <h3 className="font-bold mb-1">버스 이용시</h3>
           <p className="text-gray-600">건대입구역, 건대입구 사거리 하차</p>
@@ -111,15 +123,6 @@ export default function NavigationAndAddress() {
           <h3 className="font-bold mb-1">지하철 이용시</h3>
           <p className="text-gray-600">
             2호선 건대입구역 2번 출구 / 7호선 건대입구역 3번 출구 앞 건물
-          </p>
-        </div>
-        <div>
-          <h3 className="font-bold mb-1">버스 대절 안내</h3>
-          <p className="text-gray-600">
-            용흥공영주차장(포항시 북구 용흥동 산24-3)에서 2025년 5월 31일(토) 오전 7:30 출발
-          </p>
-          <p className="text-gray-500 text-xs mt-1">
-            ※ 버스는 예약되어 있으니 시간에 맞춰 도착해주세요. 정시에 출발합니다.
           </p>
         </div>
       </div>
