@@ -92,7 +92,7 @@ export default function GalleryGrid() {
 
       <Dialog open={activeIndex !== null} onOpenChange={(open) => !open && closeModal()}>
         <DialogTrigger asChild>{/* 트리거 안 씀 */}</DialogTrigger>
-        <DialogContent className="max-w-[95vw] w-full bg-black/90 border-none p-0">
+        <DialogContent className="max-w-screen max-h-screen w-screen h-screen p-0 border-0 bg-transparent">
           <DialogTitle className="sr-only">갤러리 이미지 보기</DialogTitle>
           <DialogClose className="absolute right-4 top-4 z-10 rounded-full bg-black/20 p-2 text-white hover:bg-black/40 backdrop-blur-sm transition-colors">
             <X className="h-5 w-5" />
@@ -100,20 +100,26 @@ export default function GalleryGrid() {
           </DialogClose>
           <div ref={sliderRef} className="keen-slider w-full h-full">
             {images.map((src, i) => (
-              <div
-                key={src}
-                className="keen-slider__slide flex items-center justify-center px-2 py-6"
-              >
+              <div key={src} className="keen-slider__slide flex items-center justify-center">
                 <Image
                   src={src}
                   alt={`갤러리 이미지 ${i + 1}`}
-                  width={800}
-                  height={800}
-                  className="w-full h-auto max-h-[80vh] object-contain rounded-xl"
+                  width={1200}
+                  height={1200}
+                  className="w-full h-full object-contain"
+                  priority={i === activeIndex}
                 />
               </div>
             ))}
           </div>
+          {/* 이미지 번호 표시 */}
+          {activeIndex !== null && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/20 backdrop-blur-sm">
+              <p className="text-white text-sm font-medium">
+                {activeIndex + 1} / {images.length}
+              </p>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </section>
