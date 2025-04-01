@@ -216,7 +216,7 @@ export default function WeddingCalendar() {
       </motion.div>
 
       {/* 설명 텍스트 */}
-      <motion.p variants={titleVariants} className="py-4 text-sm text-gray-800 text-center">
+      <motion.p variants={titleVariants} className="py-4 text-base text-gray-800 text-center">
         <span className="font-medium text-[#ee7685]">손승호</span> ❤️{" "}
         <span className="font-medium text-[#ee7685]">고유미</span> 님의 결혼식이{" "}
         <motion.span

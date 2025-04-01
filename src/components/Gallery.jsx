@@ -17,7 +17,6 @@ import "keen-slider/keen-slider.min.css";
 
 const images = Array.from({ length: 20 }, (_, i) => `/gallery/gallery_${i + 1}.jpeg`);
 
-// 갤러리 섹션 애니메이션
 const sectionVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -30,30 +29,21 @@ const sectionVariants = {
   },
 };
 
-// 제목 애니메이션 - 빠르게 표시되도록 수정
 const titleVariants = {
   hidden: { opacity: 0, y: -10 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeOut",
-      delay: 0, // 지연 없이 즉시 표시
-    },
+    transition: { duration: 0.3, ease: "easeOut" },
   },
 };
 
-// 이미지 썸네일 애니메이션 (스태거 효과용) - 제목 다음에 표시
 const thumbnailVariants = {
   hidden: { opacity: 0, scale: 0.9 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: {
-      duration: 0.4,
-      delay: 0.2, // 제목이 먼저 표시되도록 지연
-    },
+    transition: { duration: 0.4, delay: 0.2 },
   },
   hover: {
     scale: 1.05,
@@ -66,11 +56,7 @@ export default function GalleryGrid() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeIndex, setActiveIndex] = useState(null);
   const controls = useAnimation();
-  const [ref, inView] = useInView({
-    threshold: 0.1,
-    triggerOnce: false,
-    rootMargin: "5% 0px",
-  });
+  const [ref, inView] = useInView({ threshold: 0.1, triggerOnce: false, rootMargin: "5% 0px" });
 
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
@@ -78,25 +64,16 @@ export default function GalleryGrid() {
     slideChanged: (s) => setActiveIndex(s.track.details.rel),
   });
 
-  // 스크롤에 따른 애니메이션 제어
   useEffect(() => {
-    if (inView) {
-      controls.start("visible");
-    } else {
-      controls.start("hidden");
-    }
+    controls.start(inView ? "visible" : "hidden");
   }, [controls, inView]);
 
   const visibleImages = isExpanded ? images : images.slice(0, 6);
 
-  const toggleExpand = () => {
-    setIsExpanded((prev) => !prev);
-  };
-
+  const toggleExpand = () => setIsExpanded((prev) => !prev);
   const openModal = (index) => setActiveIndex(index);
   const closeModal = () => setActiveIndex(null);
 
-  // 확장/축소 버튼 애니메이션
   const buttonVariants = {
     initial: { opacity: 0, y: 20 },
     animate: {
@@ -119,7 +96,6 @@ export default function GalleryGrid() {
       animate={controls}
       className="w-full px-4 py-8"
     >
-      {/* 제목 부분 - 별도 애니메이션 적용 */}
       <motion.div
         variants={titleVariants}
         initial="hidden"
@@ -148,7 +124,7 @@ export default function GalleryGrid() {
         layout
         animate={{ height: "auto" }}
         transition={{ duration: 0.6, ease: "easeInOut" }}
-        className="overflow-hidden"
+        className="relative overflow-hidden"
       >
         <motion.div
           layout
@@ -185,6 +161,18 @@ export default function GalleryGrid() {
             ))}
           </AnimatePresence>
         </motion.div>
+        <AnimatePresence>
+          {!isExpanded && (
+            <motion.div
+              key="fade"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="pointer-events-none absolute bottom-0 left-0 w-full h-14 bg-gradient-to-t from-[#f1d7ef] to-transparent z-10"
+            />
+          )}
+        </AnimatePresence>
       </motion.div>
 
       <motion.div
@@ -198,54 +186,64 @@ export default function GalleryGrid() {
           whileTap={{ scale: 0.98 }}
           variants={buttonVariants}
           onClick={toggleExpand}
-          className="px-6 py-2 border bg-white border-gray-400 text-sm rounded-full transition-colors"
+          className="w-48 py-2 border bg-white border-gray-400 text-sm font-semibold text-gray-700 rounded-none transition-colors"
         >
           {isExpanded ? "사진 접기" : "사진 더 보기"}
         </motion.button>
       </motion.div>
 
       <Dialog open={activeIndex !== null} onOpenChange={(open) => !open && closeModal()}>
-        <DialogTrigger asChild>{/* 트리거 안 씀 */}</DialogTrigger>
-        <DialogContent className="max-w-screen max-h-screen w-screen h-screen p-0 border-0 bg-transparent">
-          <DialogTitle className="sr-only">갤러리 이미지 보기</DialogTitle>
-          <DialogClose className="absolute right-4 top-4 z-10 rounded-full bg-black/20 p-2 text-white hover:bg-black/40 backdrop-blur-sm transition-colors">
-            <X className="h-5 w-5" />
-            <span className="sr-only">닫기</span>
-          </DialogClose>
-          <div ref={sliderRef} className="keen-slider w-full h-full">
-            {images.map((src, i) => (
+        <DialogTrigger asChild />
+        <DialogContent asChild>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="max-w-screen max-h-screen w-screen h-screen p-0 border-0 bg-black/70 backdrop-blur-sm relative"
+          >
+            <DialogTitle className="sr-only">갤러리 이미지 보기</DialogTitle>
+            <DialogClose className="absolute right-4 top-4 z-10 rounded-full bg-black/30 p-2 text-white hover:bg-black/50 transition-colors">
+              <X className="h-5 w-5" />
+              <span className="sr-only">닫기</span>
+            </DialogClose>
+
+            <div ref={sliderRef} className="keen-slider w-full h-full">
+              {images.map((src, i) => (
+                <motion.div
+                  key={src}
+                  className="keen-slider__slide flex items-center justify-center"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Image
+                    src={src}
+                    alt={`갤러리 이미지 ${i + 1}`}
+                    width={1200}
+                    height={1200}
+                    className="w-full h-full object-contain"
+                    priority={i === activeIndex}
+                  />
+                </motion.div>
+              ))}
+            </div>
+
+            {activeIndex !== null && (
               <motion.div
-                key={src}
-                className="keen-slider__slide flex items-center justify-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/30"
               >
-                <Image
-                  src={src}
-                  alt={`갤러리 이미지 ${i + 1}`}
-                  width={1200}
-                  height={1200}
-                  className="w-full h-full object-contain"
-                  priority={i === activeIndex}
-                />
+                <p className="text-white text-sm font-medium">
+                  {activeIndex + 1} / {images.length}
+                </p>
               </motion.div>
-            ))}
-          </div>
-          {/* 이미지 번호 표시 */}
-          {activeIndex !== null && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.3 }}
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/20 backdrop-blur-sm"
-            >
-              <p className="text-white text-sm font-medium">
-                {activeIndex + 1} / {images.length}
-              </p>
-            </motion.div>
-          )}
+            )}
+          </motion.div>
         </DialogContent>
       </Dialog>
     </motion.section>

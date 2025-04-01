@@ -12,11 +12,11 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center min-h-screen bg-white overflow-x-hidden w-full">
       <MainContent />
-      <div className="bg-[#fdf1f2] w-full">
+      <div className="bg-[#f1d7ef] w-full">
         <Gallery />
       </div>
 
-      <div className="w-full bg-[#fdf1f2] py-12">
+      <div className="w-full bg-[#f1d7ef] py-12">
         <WeddingCalendar />
       </div>
 
@@ -24,7 +24,7 @@ export default function Home() {
         <NavigationAndAddress />
       </div>
 
-      <div className="w-full bg-[#fdf1f2] py-12">
+      <div className="w-full bg-[#f1d7ef] py-12">
         <Account />
       </div>
 

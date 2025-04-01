@@ -113,7 +113,7 @@ export default function AudioPlayer() {
       <audio ref={audioRef} src="/audio/wedding-music.mp3" preload="auto" loop />
 
       {/* 상단 컨트롤러 */}
-      <div className="fixed top-0 left-0 right-0 bg-[#fdf1f2] text-black p-3 z-50 flex justify-between items-center">
+      <div className="fixed top-0 left-0 right-0 bg-[#f1d7ef] text-black p-3 z-50 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Music className="h-4 w-4" />
           <p className="text-sm">

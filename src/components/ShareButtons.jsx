@@ -97,7 +97,7 @@ export default function ShareButtons() {
   };
 
   return (
-    <footer className="w-full bg-[#fdf1f2] py-8 border-t border-[#ee7685]/20 pb-16">
+    <footer className="w-full bg-[#f1d7ef] py-8 border-t border-[#ee7685]/20 pb-16">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="max-w-md mx-auto px-6">
         {/*<div className="flex flex-col items-center">
