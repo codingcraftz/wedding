@@ -99,7 +99,7 @@ export default function AnimatedSection({
   return (
     <div
       ref={ref}
-      className={`${className} ${animationClass} ${isVisible ? visibleClass : ""} ${
+      className={`${className} bg-background ${animationClass} ${isVisible ? visibleClass : ""} ${
         isInitialized ? "" : "opacity-0"
       } w-full`}
       style={{ transitionDelay: `${delay}ms` }}

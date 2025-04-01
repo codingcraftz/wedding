@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { Toaster, toast } from "react-hot-toast";
 import { RefreshCw, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import {
   Dialog,
   DialogTrigger,
@@ -31,6 +33,63 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// 애니메이션 변형(variants) 정의
+const containerVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+    },
+  },
+};
+
+const titleVariants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut",
+    },
+  },
+};
+
+const messageVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  visible: (index) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      delay: index * 0.1,
+      ease: "easeOut",
+    },
+  }),
+};
+
+const buttonVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      delay: 0.3,
+    },
+  },
+  hover: {
+    scale: 1.05,
+    backgroundColor: "rgb(55, 65, 81)",
+    transition: { duration: 0.2 },
+  },
+  tap: { scale: 0.97 },
+};
+
 export default function Guestbook() {
   const [isOpen, setIsOpen] = useState(false);
   const [allMessages, setAllMessages] = useState([]);
@@ -46,6 +105,13 @@ export default function Guestbook() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 3; // 페이지당 3개의 메시지 표시
+
+  // 스크롤 애니메이션을 위한 IntersectionObserver 설정
+  const [ref, inView] = useInView({
+    threshold: 0.1,
+    triggerOnce: false,
+    rootMargin: "5% 0px",
+  });
 
   const fetchAllMessages = async () => {
     setIsLoading(true);
@@ -187,8 +253,15 @@ export default function Guestbook() {
     }
 
     return (
-      <div className="flex justify-center items-center gap-2 mt-6">
-        <button
+      <motion.div
+        variants={buttonVariants}
+        initial="hidden"
+        animate="visible"
+        className="flex justify-center items-center gap-2 mt-6"
+      >
+        <motion.button
+          whileHover={{ opacity: page === 1 ? 0.3 : 0.8 }}
+          whileTap={page !== 1 ? { scale: 0.95 } : {}}
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
           className={`w-8 h-8 flex items-center justify-center rounded-md ${
@@ -196,21 +269,25 @@ export default function Guestbook() {
           }`}
         >
           <ChevronLeft className="w-4 h-4" />
-        </button>
+        </motion.button>
 
         {pageNumbers.map((num) => (
-          <button
+          <motion.button
             key={num}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => handlePageChange(num)}
             className={`w-8 h-8 rounded-md ${
               page === num ? "bg-[#ee7685] text-white" : "text-gray-700 hover:bg-gray-100"
             }`}
           >
             {num}
-          </button>
+          </motion.button>
         ))}
 
-        <button
+        <motion.button
+          whileHover={{ opacity: page === totalPages ? 0.3 : 0.8 }}
+          whileTap={page !== totalPages ? { scale: 0.95 } : {}}
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
           className={`w-8 h-8 flex items-center justify-center rounded-md ${
@@ -218,62 +295,95 @@ export default function Guestbook() {
           }`}
         >
           <ChevronRight className="w-4 h-4" />
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
     );
   };
 
   return (
-    <div className="px-4 py-10 max-w-md mx-auto w-full">
+    <motion.div
+      ref={ref}
+      variants={containerVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      className="px-4 py-10 max-w-md mx-auto w-full"
+    >
       <Toaster position="top-center" />
-      <div className="text-center mb-6">
-        <p className="uppercase text-xs text-gray-400 tracking-widest py-4">GUEST BOOK</p>
-        <h2 className="text-base font-semibold">따뜻한 마음으로 축복해 주세요</h2>
-      </div>
+      <motion.div variants={titleVariants} className="text-center mb-6">
+        <motion.p
+          variants={titleVariants}
+          className="uppercase text-xs text-gray-400 tracking-widest py-4"
+        >
+          GUEST BOOK
+        </motion.p>
+        <motion.h2 variants={titleVariants} className="text-base font-semibold">
+          따뜻한 마음으로 축복해 주세요
+        </motion.h2>
+      </motion.div>
 
       <div className="space-y-4">
         {isLoading ? (
-          <div className="flex justify-center py-10">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="flex justify-center py-10"
+          >
             <RefreshCw className="h-6 w-6 animate-spin text-gray-400" />
-          </div>
+          </motion.div>
         ) : displayMessages.length > 0 ? (
-          displayMessages.map((item) => (
-            <div
-              key={item.id}
-              className="relative w-full rounded-2xl border border-gray-100 px-4 py-4 bg-white shadow-sm"
-            >
-              <button
-                onClick={() => {
-                  setDeleteInfo({ id: item.id, password: "" });
-                  setIsDeleteDialogOpen(true);
-                }}
-                className="absolute right-3 top-3 text-gray-300 hover:text-red-400"
+          <AnimatePresence>
+            {displayMessages.map((item, index) => (
+              <motion.div
+                key={item.id}
+                custom={index}
+                variants={messageVariants}
+                initial="hidden"
+                animate="visible"
+                exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+                className="relative w-full rounded-2xl border border-gray-100 px-4 py-4 bg-white shadow-sm"
               >
-                <X className="w-5 h-5" />
-              </button>
-              <p className="font-bold text-sm text-gray-900 mb-2">{item.author}</p>
-              <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                {item.message}
-              </p>
-              <div className="text-xs text-gray-400 mt-3 text-right">
-                {formatDate(item.created_at)}
-              </div>
-            </div>
-          ))
+                <motion.button
+                  whileHover={{ color: "#f56565", scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    setDeleteInfo({ id: item.id, password: "" });
+                    setIsDeleteDialogOpen(true);
+                  }}
+                  className="absolute right-3 top-3 text-gray-300 hover:text-red-400"
+                >
+                  <X className="w-5 h-5" />
+                </motion.button>
+                <p className="font-bold text-sm text-gray-900 mb-2">{item.author}</p>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  {item.message}
+                </p>
+                <div className="text-xs text-gray-400 mt-3 text-right">
+                  {formatDate(item.created_at)}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         ) : (
-          <p className="text-center text-gray-500 py-10">방명록이 아직 없습니다.</p>
+          <motion.p variants={titleVariants} className="text-center text-gray-500 py-10">
+            방명록이 아직 없습니다.
+          </motion.p>
         )}
 
         {renderPagination()}
 
-        <div className="flex justify-center mt-8">
-          <button
+        <motion.div variants={buttonVariants} className="flex justify-center mt-8">
+          <motion.button
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
             onClick={() => setIsOpen(true)}
             className="w-48 text-sm bg-gray-800 text-white hover:bg-gray-700 py-2 rounded-md"
           >
             작성하기
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
 
       {/* 작성 모달 */}
@@ -316,7 +426,9 @@ export default function Guestbook() {
               />
             </div>
             <DialogFooter className="pt-2">
-              <button
+              <motion.button
+                whileHover={{ backgroundColor: "#d35e6c" }}
+                whileTap={{ scale: 0.97 }}
                 type="submit"
                 disabled={isSubmitting}
                 className="w-full bg-[#ee7685] hover:bg-[#d35e6c] text-white py-2 rounded-md"
@@ -328,7 +440,7 @@ export default function Guestbook() {
                 ) : (
                   "메시지 저장"
                 )}
-              </button>
+              </motion.button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -352,15 +464,17 @@ export default function Guestbook() {
           />
           <AlertDialogFooter className="pt-4 flex gap-2">
             <AlertDialogCancel className="flex-1 py-2 rounded-md border">취소</AlertDialogCancel>
-            <AlertDialogAction
+            <motion.button
+              whileHover={{ backgroundColor: "#E53E3E" }}
+              whileTap={{ scale: 0.97 }}
               onClick={deleteMessage}
               className="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
             >
               삭제하기
-            </AlertDialogAction>
+            </motion.button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </motion.div>
   );
 }

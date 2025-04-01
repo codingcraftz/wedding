@@ -12,36 +12,25 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center min-h-screen bg-white overflow-x-hidden w-full">
       <MainContent />
+      <div className="bg-[#fdf1f2] w-full">
+        <Gallery />
+      </div>
 
-      <AnimatedSection animation="fade-up" delay={300} className="w-full">
-        <div className="bg-white w-full pb-12">
-          <Gallery />
-        </div>
-      </AnimatedSection>
+      <div className="w-full bg-[#fdf1f2] py-12">
+        <WeddingCalendar />
+      </div>
 
-      <AnimatedSection animation="fade-up" delay={300} className="w-full">
-        <div className="w-full bg-[#fdf1f2] py-12">
-          <WeddingCalendar />
-        </div>
-      </AnimatedSection>
+      <div className="w-full py-12 bg-white">
+        <NavigationAndAddress />
+      </div>
 
-      <AnimatedSection animation="fade-up" delay={300} className="w-full">
-        <div className="w-full py-12 bg-white">
-          <NavigationAndAddress />
-        </div>
-      </AnimatedSection>
+      <div className="w-full bg-[#fdf1f2] py-12">
+        <Account />
+      </div>
 
-      <AnimatedSection animation="fade-up" delay={300} className="w-full">
-        <div className="w-full bg-[#fdf1f2] py-12">
-          <Account />
-        </div>
-      </AnimatedSection>
-
-      <AnimatedSection animation="fade-in" delay={300} className="w-full">
-        <div className="bg-white w-full py-12">
-          <Guestbook />
-        </div>
-      </AnimatedSection>
+      <div className="bg-white w-full py-12">
+        <Guestbook />
+      </div>
       <ShareButtons />
     </main>
   );
