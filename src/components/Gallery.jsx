@@ -1,158 +1,140 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
-import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
-// 이미지 경로 배열 (20개의 이미지)
+import { useState } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogClose,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useDrag } from "@use-gesture/react";
+
 const images = Array.from({ length: 20 }, (_, i) => `/gallery/gallery_${i + 1}.jpeg`);
 
-export default function GalleryCarousel() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [loaded, setLoaded] = useState(false);
-  const [imagesLoaded, setImagesLoaded] = useState(0);
-  const [totalImages] = useState(images.length);
-  const [showArrows, setShowArrows] = useState(false);
+export default function GalleryGrid() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeImage, setActiveImage] = useState(null);
+  const [dragX, setDragX] = useState(0);
 
-  const [sliderRef, instanceRef] = useKeenSlider({
-    initial: 0,
-    loop: true,
-    slides: {
-      perView: 1,
-      spacing: 10,
-    },
-    breakpoints: {
-      "(min-width: 640px)": {
-        slides: {
-          perView: 1.5,
-          spacing: 15,
-        },
-      },
-    },
-    slideChanged(slider) {
-      setCurrentSlide(slider.track.details.rel);
-    },
-    created() {
-      setLoaded(true);
-    },
-  });
+  const visibleImages = isExpanded ? images : images.slice(0, 6);
 
-  // 모바일에서 터치 동작 처리를 위해 useEffect에서 터치 이벤트 리스너 추가
-  useEffect(() => {
-    if (instanceRef.current) {
-      const instance = instanceRef.current;
-
-      // 터치 시작 시 화살표 표시
-      const handleTouchStart = () => {
-        setShowArrows(true);
-        // 5초 후 화살표 숨기기
-        setTimeout(() => {
-          setShowArrows(false);
-        }, 5000);
-      };
-
-      // DOM에 이벤트 리스너 추가
-      document.addEventListener("touchstart", handleTouchStart);
-
-      return () => {
-        // 컴포넌트 언마운트 시 이벤트 리스너 제거
-        document.removeEventListener("touchstart", handleTouchStart);
-      };
-    }
-  }, [instanceRef]);
-
-  // 이미지 로드 처리 함수
-  const handleImageLoad = () => {
-    setImagesLoaded((prev) => prev + 1);
+  const toggleExpand = () => {
+    setIsExpanded((prev) => !prev);
   };
 
+  const openModal = (src) => setActiveImage(src);
+  const closeModal = () => setActiveImage(null);
+
+  const navigate = (direction) => {
+    if (!activeImage) return;
+    const index = images.indexOf(activeImage);
+    const nextIndex = (index + direction + images.length) % images.length;
+    setActiveImage(images[nextIndex]);
+  };
+
+  const bind = useDrag(({ down, movement: [mx], direction: [dx], velocity }) => {
+    setDragX(mx);
+    if (!down && velocity > 0.2) {
+      if (dx > 0) navigate(-1);
+      else navigate(1);
+    }
+  });
+
   return (
-    <section className="py-12 relative overflow-hidden w-full">
-      <div className="max-w-md mx-auto px-2 overflow-hidden">
-        <div className="flex justify-center mb-6">
-          <h2 className="text-xl font-semibold text-center text-[#ee7685] border-2 border-[#ee7685] rounded-full py-2 px-6 inline-block">
-            갤러리
-          </h2>
-        </div>
-
-        {/* 로딩 표시 */}
-        {imagesLoaded < totalImages / 2 && (
-          <div className="text-center py-4 text-gray-500">
-            이미지 로딩 중... ({imagesLoaded}/{totalImages})
-          </div>
-        )}
-
-        <div className="relative overflow-hidden w-full">
-          {/* 슬라이더 컨테이너 */}
-          <div
-            ref={sliderRef}
-            className="keen-slider h-[350px] md:h-[500px] rounded-xl overflow-hidden"
-            style={{ maxWidth: "100%" }}
-          >
-            {images.map((src, idx) => (
-              <div
-                key={idx}
-                className="keen-slider__slide relative flex items-center justify-center overflow-hidden"
-              >
-                {/* 이미지 컨테이너에 고정된 높이 적용 */}
-                <div className="w-full h-full relative">
-                  <Image
-                    src={src}
-                    alt={`갤러리 이미지 ${idx + 1}`}
-                    fill
-                    sizes="(max-width: 768px) 90vw, 400px"
-                    className="object-cover rounded-xl"
-                    priority={idx < 5} // 처음 5개 이미지는 우선 로드
-                    onLoad={handleImageLoad}
-                    loading={idx < 5 ? "eager" : "lazy"}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* 이전/다음 버튼 (화살표) */}
-          {loaded && instanceRef.current && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  instanceRef.current?.prev();
-                }}
-                className={`absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md z-10 transition-opacity ${
-                  showArrows || imagesLoaded < totalImages ? "opacity-60" : "opacity-0"
-                } hover:opacity-100`}
-                aria-label="이전 이미지"
-              >
-                <ChevronLeft className="w-5 h-5 text-gray-700" />
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  instanceRef.current?.next();
-                }}
-                className={`absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md z-10 transition-opacity ${
-                  showArrows || imagesLoaded < totalImages ? "opacity-60" : "opacity-0"
-                } hover:opacity-100`}
-                aria-label="다음 이미지"
-              >
-                <ChevronRight className="w-5 h-5 text-gray-700" />
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* 현재 슬라이드 번호 표시 */}
-        {loaded && instanceRef.current && (
-          <div className="flex justify-center mt-4">
-            <div className="text-sm text-gray-500">
-              {currentSlide + 1} / {instanceRef.current.track.details.slides.length}
-            </div>
-          </div>
-        )}
+    <section className="w-full px-4 py-12">
+      <div className="text-center mb-6">
+        <p className="uppercase text-sm text-gray-400 tracking-widest">Gallery</p>
+        <h2 className="text-xl font-semibold">우리가 함께 한 모든 순간</h2>
       </div>
+
+      <motion.div
+        layout
+        animate={{ height: "auto" }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        <motion.div
+          layout
+          className="grid grid-cols-3 gap-3 max-w-md mx-auto"
+          transition={{ layout: { duration: 0.6, ease: "easeInOut" } }}
+        >
+          <AnimatePresence initial={false}>
+            {visibleImages.map((src, i) => (
+              <motion.div
+                key={src}
+                layout
+                initial={{ opacity: 0, y: isExpanded ? -10 : 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: isExpanded ? 10 : -10 }}
+                transition={{ duration: 0.4, delay: i * 0.03 }}
+                className="aspect-square overflow-hidden rounded-lg shadow-sm cursor-pointer"
+                onClick={() => openModal(src)}
+              >
+                <Image
+                  src={src}
+                  alt={`갤러리 이미지 ${i + 1}`}
+                  width={300}
+                  height={300}
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        initial={false}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeInOut", delay: 0.1 }}
+        className="mt-8 flex justify-center"
+      >
+        <button
+          onClick={toggleExpand}
+          className="px-6 py-2 border border-gray-400 text-sm rounded-full hover:bg-gray-100 transition-colors"
+        >
+          {isExpanded ? "사진 접기" : "사진 더 보기"}
+        </button>
+      </motion.div>
+
+      <Dialog open={!!activeImage} onOpenChange={(open) => !open && closeModal()}>
+        <DialogTrigger asChild>{/* no trigger */}</DialogTrigger>
+        <DialogContent className="max-w-[90vw] bg-black/90 p-0 border-none">
+          <DialogTitle className="sr-only">갤러리 이미지 보기</DialogTitle>
+          <motion.div
+            {...bind()}
+            style={{ x: dragX }}
+            className="relative w-full max-w-2xl mx-auto cursor-grab active:cursor-grabbing"
+          >
+            <Image
+              src={activeImage || images[0]}
+              alt="확대 이미지"
+              width={800}
+              height={800}
+              className="w-full h-auto rounded-xl object-contain"
+            />
+            <DialogClose className="absolute top-4 right-4 text-white">
+              <X className="w-6 h-6" />
+            </DialogClose>
+            <button
+              onClick={() => navigate(-1)}
+              className="absolute top-1/2 left-2 -translate-y-1/2 text-white"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => navigate(1)}
+              className="absolute top-1/2 right-2 -translate-y-1/2 text-white"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </motion.div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

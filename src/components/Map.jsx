@@ -7,17 +7,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { HALL_LAT, HALL_LNG, HALL_NAME, HALL_ADDRESS } from "@/lib/constants";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Noto_Sans_KR } from "next/font/google";
-import { Bus, Train, Car, Copy, Map as MapIcon, MapPin, ExternalLink } from "lucide-react";
 import { Gamja_Flower } from "next/font/google";
+import { Bus, Train, Car, Copy, Map as MapIcon, MapPin, ExternalLink } from "lucide-react";
 
-// 노토 산스 폰트 (무난하고 가독성 좋은 폰트)
-const notoSans = Noto_Sans_KR({
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
+// 감자꽃 폰트는 특별한 강조를 위해 유지
 const gamjaFlower = Gamja_Flower({
   weight: ["400"],
   subsets: ["latin"],
@@ -57,9 +50,7 @@ export default function NavigationAndAddress() {
   };
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center bg-white py-18 px-4 ${notoSans.className}`}
-    >
+    <div className="flex flex-col items-center justify-center bg-white py-18 px-4">
       {/* Toast Container */}
       <Toaster position="top-center" reverseOrder={false} />
       <Script

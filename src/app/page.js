@@ -20,7 +20,7 @@ export default function Home() {
       </AnimatedSection>
 
       <AnimatedSection animation="fade-up" delay={200}>
-        <div className="bg-[#181818] py-18 px-12 w-full">
+        <div className="py-6 w-full">
           <WeddingCalendar />
         </div>
       </AnimatedSection>

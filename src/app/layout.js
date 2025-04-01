@@ -1,20 +1,38 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import AudioPlayer from "@/components/AudioPlayer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// SUIT 폰트 로컬 파일로 정의
+const suit = localFont({
+  src: [
+    {
+      path: "../fonts/SUIT-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../fonts/SUIT-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../fonts/SUIT-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../fonts/SUIT-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-suit",
+  display: "swap",
 });
 
 export const metadata = {
-  title: "손승호 ❤️ 고유미 결혼합니다.",
-  description: "25. 5. 31(토) 2:10PM",
+  title: "손삼익 ❤️ 고유미 결혼합니다.",
+  description: "25. 5. 31(토) 1:20PM",
 };
 
 export default function RootLayout({ children }) {
@@ -22,7 +40,7 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body
         id="root"
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background overflow-x-hidden`}
+        className={`${suit.variable} font-sans antialiased bg-background overflow-x-hidden`}
       >
         <div className="overflow-x-hidden w-full">
           {children}

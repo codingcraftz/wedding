@@ -1,36 +1,37 @@
 "use client";
 
-import React from "react";
-import { Noto_Serif_KR, Gamja_Flower } from "next/font/google";
-import "./CalendarStyles.css";
+import React, { useEffect, useState } from "react";
+import { Heart } from "lucide-react";
+import { differenceInSeconds } from "date-fns";
 import { WEDDING_DATE } from "@/lib/constants";
 
-// 나눔명조 폰트 (우아하고 전통적인 청첩장 느낌)
-const notoSerif = Noto_Serif_KR({
-  weight: ["400", "600"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
-// 감자꽃 폰트 (캘린더 날짜에 귀여운 느낌)
-const gamjaFlower = Gamja_Flower({
-  weight: ["400"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
 export default function WeddingCalendar() {
-  const weddingDate = new Date(WEDDING_DATE); // 결혼식 날짜
+  const weddingDate = new Date(WEDDING_DATE);
+  const [timeLeft, setTimeLeft] = useState(getTimeLeft());
 
-  // 날짜 생성 로직
+  function getTimeLeft() {
+    const diff = differenceInSeconds(weddingDate, new Date());
+    const days = Math.floor(diff / (60 * 60 * 24));
+    const hours = Math.floor((diff % (60 * 60 * 24)) / 3600);
+    const minutes = Math.floor((diff % 3600) / 60);
+    const seconds = diff % 60;
+    return { days, hours, minutes, seconds };
+  }
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(getTimeLeft());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const generateCalendar = () => {
-    const firstDay = new Date(weddingDate.getFullYear(), weddingDate.getMonth(), 1).getDay(); // 첫째 날의 요일
+    const firstDay = new Date(weddingDate.getFullYear(), weddingDate.getMonth(), 1).getDay();
     const daysInMonth = new Date(
       weddingDate.getFullYear(),
       weddingDate.getMonth() + 1,
       0
-    ).getDate(); // 월의 총 일수
-
+    ).getDate();
     const calendar = [];
     let day = 1;
 
@@ -38,11 +39,11 @@ export default function WeddingCalendar() {
       const row = [];
       for (let weekday = 0; weekday < 7; weekday++) {
         if (week === 0 && weekday < firstDay) {
-          row.push(null); // 공백 추가
+          row.push(null);
         } else if (day > daysInMonth) {
-          row.push(null); // 남은 공백 추가
+          row.push(null);
         } else {
-          row.push(day); // 날짜 추가
+          row.push(day);
           day++;
         }
       }
@@ -52,57 +53,88 @@ export default function WeddingCalendar() {
   };
 
   const calendar = generateCalendar();
-
-  // 날짜 포맷
   const year = weddingDate.getFullYear();
-  const month = String(weddingDate.getMonth() + 1).padStart(2, "0");
-  const day = String(weddingDate.getDate()).padStart(2, "0");
-
-  // 요일 계산
-  const weekdays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-  const weekday = weekdays[weddingDate.getDay()];
-
-  // 최종 포맷
-  const formattedDate = `${year}.${month}.${day} ${weekday}`;
+  const month = weddingDate.getMonth() + 1;
+  const date = weddingDate.getDate();
+  const dayText = ["일", "월", "화", "수", "목", "금", "토"][weddingDate.getDay()];
 
   return (
-    <div
-      className={`text-[#ee7685] flex flex-col items-center justify-center ${gamjaFlower.className}`}
-    >
-      {/* 헤더에 동적으로 날짜 표시 */}
-      <h2 className="text-2xl">{formattedDate}</h2>
-      <p className="mb-4 italic">1:20PM</p>
-      <div className="w-96 rounded-lg p-4">
-        {/* 달력 헤더 */}
-        <div className="grid grid-cols-7 text-center font-semibold mb-4">
-          <div>SUN</div>
-          <div>MON</div>
-          <div>TUE</div>
-          <div>WED</div>
-          <div>THU</div>
-          <div>FRI</div>
-          <div>SAT</div>
-        </div>
-        {/* 달력 내용 */}
-        <div className={`grid grid-cols-7 text-center ${gamjaFlower.className}`}>
-          {calendar.map((week, weekIndex) => (
-            <React.Fragment key={weekIndex}>
-              {week.map((dayValue, dayIndex) => (
-                <div
-                  key={dayIndex}
-                  className={`py-2 text-lg ${
-                    dayValue === weddingDate.getDate()
-                      ? "bg-[#ee7685] text-[#181818] font-bold rounded-full"
-                      : "text-[#ee7685]"
-                  }`}
-                >
-                  {dayValue || ""}
-                </div>
-              ))}
-            </React.Fragment>
-          ))}
+    <section className="w-full px-4 py-12 text-center">
+      <p className="uppercase text-sm tracking-widest text-gray-400">WEDDING DATE</p>
+      <h2 className={`text-xl font-semibold mt-2`}>
+        {year}년 {month}월 {date}일 {dayText}요일 오전 11시
+      </h2>
+
+      {/* 달력 */}
+      <div className="grid grid-cols-7 gap-2 text-base mt-6">
+        {["일", "월", "화", "수", "목", "금", "토"].map((d, i) => (
+          <div key={i} className="text-[#111111] font-medium">
+            {d}
+          </div>
+        ))}
+
+        {calendar.map((week, i) => (
+          <React.Fragment key={i}>
+            {week.map((day, j) => (
+              <div
+                key={j}
+                className={`aspect-square flex items-center justify-center text-sm rounded-full transition-all ${
+                  day === date ? "bg-[#444444] text-white relative" : "text-[#111111]"
+                }`}
+              >
+                {day === date ? (
+                  <div className="flex items-center gap-1">
+                    <Heart className="w-3 h-3 fill-white text-white" />
+                    {day}
+                  </div>
+                ) : (
+                  day || ""
+                )}
+              </div>
+            ))}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* 카운트다운 박스 */}
+      <div
+        className="rounded-xl mt-10 overflow-hidden relative text-white"
+        style={{
+          backgroundImage: "url('/flowers.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="backdrop-brightness-[0.4] py-6 px-4">
+          <div className="flex justify-center items-center gap-4 text-center font-mono text-lg">
+            <CountdownBox label="Days" value={timeLeft.days} />
+            <span className="text-xl">:</span>
+            <CountdownBox label="Hours" value={timeLeft.hours} />
+            <span className="text-xl">:</span>
+            <CountdownBox label="Minutes" value={timeLeft.minutes} />
+            <span className="text-xl">:</span>
+            <CountdownBox label="Seconds" value={timeLeft.seconds} />
+          </div>
         </div>
       </div>
+
+      {/* 설명 텍스트 */}
+      <p className="mt-6 text-sm text-gray-800">
+        <span className="font-medium text-[#ee7685]">형석</span> ❤️{" "}
+        <span className="font-medium text-[#ee7685]">은비</span> 님의 결혼식이{" "}
+        <span className="font-semibold text-black">{timeLeft.days}</span>일 남았습니다.
+      </p>
+    </section>
+  );
+}
+
+function CountdownBox({ label, value }) {
+  return (
+    <div>
+      <div className="bg-black/60 px-4 py-2 rounded-md text-2xl font-bold">
+        {String(value).padStart(2, "0")}
+      </div>
+      <div className="text-xs mt-1">{label}</div>
     </div>
   );
 }

@@ -121,6 +121,7 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    font-family: var(--font-suit), sans-serif;
   }
 
   /* 이미지 간 여백 제거 */
