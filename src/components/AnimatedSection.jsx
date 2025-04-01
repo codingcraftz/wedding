@@ -9,33 +9,63 @@ export default function AnimatedSection({
   animation = "fade-up", // 기본 애니메이션 유형
 }) {
   const [isVisible, setIsVisible] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // 요소가 화면에 보이면 isVisible을 true로 설정
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      {
-        root: null,
-        threshold: 0.2, // 혹은 0.01
-      }
-    );
+    // 페이지 로드 시 강제로 모든 요소를 숨김 상태로 시작
+    setIsVisible(false);
 
-    if (ref.current) {
+    // 약간의 지연 후 애니메이션 처리 진행
+    const initTimer = setTimeout(() => {
+      setIsInitialized(true);
+
+      if (!ref.current) return;
+
+      // 현재 요소가 화면에 보이는지 확인
+      const checkVisibility = () => {
+        const rect = ref.current.getBoundingClientRect();
+        // 요소가 화면에 보이는 경우 (화면 아래 여백 300px 추가)
+        return rect.top < window.innerHeight + 300;
+      };
+
+      // 초기 로드 시 화면에 보이는 요소는 지연 후 애니메이션 적용
+      if (checkVisibility()) {
+        // 요소별 지연 적용 (delay prop + 50ms 간격)
+        setTimeout(() => {
+          setIsVisible(true);
+        }, delay);
+        return;
+      }
+
+      // 화면에 보이지 않는 요소는 IntersectionObserver로 모니터링
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        },
+        {
+          root: null,
+          rootMargin: "300px", // 화면 아래 300px 지점에서 트리거
+          threshold: 0.01, // 1%만 보여도 트리거
+        }
+      );
+
       observer.observe(ref.current);
-    }
+
+      return () => {
+        if (ref.current) {
+          observer.unobserve(ref.current);
+        }
+      };
+    }, 100); // 초기화를 위한 짧은 지연
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
+      clearTimeout(initTimer);
     };
-  }, []);
+  }, [delay]);
 
   // 애니메이션 종류에 따른 클래스 설정
   const animationClass =
@@ -64,7 +94,9 @@ export default function AnimatedSection({
   return (
     <div
       ref={ref}
-      className={`${className} ${animationClass} ${isVisible ? visibleClass : ""} w-full`}
+      className={`${className} ${animationClass} ${isVisible ? visibleClass : ""} ${
+        isInitialized ? "" : "opacity-0"
+      } w-full`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
