@@ -136,9 +136,9 @@ export default function Guestbook() {
     <div className="px-2 py-10 max-w-md mx-auto w-full">
       <Toaster position="top-center" />
 
-      <div className="mb-6 text-center">
-        <p className="text-xs tracking-wide text-gray-400 uppercase">GUEST BOOK</p>
-        <h2 className="font-semibold text-xl mt-2 text-[#ee7685]">따뜻한 마음으로 축복해 주세요</h2>
+      <div className="text-center mb-6">
+        <p className="uppercase text-xs text-gray-400 tracking-widest py-4">GUEST BOOK</p>
+        <h2 className="text-base font-semibold">마음 전하는 곳</h2>
       </div>
 
       <div className="space-y-3">

@@ -66,9 +66,9 @@ const Account = () => {
       {expanded && (
         <div className="divide-y">
           {accounts.map((account, i) => (
-            <div key={i} className="px-4 py-4 flex flex-col gap-1">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">
+            <div key={i} className="px-4 py-4 flex flex-col gap-3">
+              <div className="grid grid-cols-[6em_1fr] items-center">
+                <span className="text-sm text-gray-500 text-left">
                   {i === 0
                     ? title.includes("신랑")
                       ? "신랑"
@@ -77,31 +77,32 @@ const Account = () => {
                     ? "아버지"
                     : "어머니"}
                 </span>
-                <span className="text-sm font-medium text-gray-900">{account.name}</span>
+                <span className="text-sm font-medium text-gray-900 text-left">{account.name}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">{account.bank}</span>
-                <span className="text-sm font-medium text-gray-900">{account.accountNumber}</span>
-              </div>
-              <div className="mt-2 flex justify-end">
-                <button
-                  onClick={() => copyToClipboard(account.accountNumber, account.name)}
-                  className="bg-gray-100 text-gray-800 px-3 py-1.5 text-sm rounded hover:bg-gray-200"
-                >
-                  복사하기
-                </button>
+              <div className="grid grid-cols-[6em_1fr] items-center">
+                <span className="text-sm text-gray-500 text-left">{account.bank}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-900">{account.accountNumber}</span>
+                  <button
+                    onClick={() => copyToClipboard(account.accountNumber, account.name)}
+                    className="bg-gray-100 text-gray-600 px-2 py-1 text-xs rounded-full hover:bg-gray-200 flex items-center gap-1 ml-2"
+                  >
+                    <Copy size={12} />
+                    <span>복사</span>
+                  </button>
+                </div>
               </div>
               <div className="mt-2 flex gap-2">
                 <a
                   href={account.tossUrl}
-                  className="flex-1 py-2 px-3 bg-[#3182F6] hover:bg-[#2272E6] text-white rounded-lg text-sm flex items-center justify-center gap-1 transition-colors"
+                  className="flex-1 py-2 px-3 bg-[#ee7685] hover:bg-[#d35e6c] text-white rounded-lg text-sm flex items-center justify-center gap-1 transition-colors"
                 >
                   <span>토스로 송금</span>
                   <ExternalLink size={14} />
                 </a>
                 <a
                   href={account.kakaoPayUrl}
-                  className="flex-1 py-2 px-3 bg-[#FFEB00] hover:bg-[#FFDD00] text-[#3C1E1E] rounded-lg text-sm flex items-center justify-center gap-1 transition-colors"
+                  className="flex-1 py-2 px-3 bg-[#f8d5da] hover:bg-[#ee7685] text-[#d35e6c] hover:text-white rounded-lg text-sm flex items-center justify-center gap-1 transition-colors"
                 >
                   <span>카카오페이</span>
                   <ExternalLink size={14} />
@@ -115,7 +116,7 @@ const Account = () => {
   );
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 py-10 text-center">
+    <div className="w-full mx-auto px-4 text-center pb-12">
       <Toaster position="top-center" />
       <div className="text-center mb-6">
         <p className="uppercase text-xs text-gray-400 tracking-widest py-4">THANKS TO</p>

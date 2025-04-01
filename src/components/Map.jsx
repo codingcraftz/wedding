@@ -29,11 +29,11 @@ export default function NavigationAndAddress() {
         strategy="beforeInteractive"
         onLoad={() => setMapLoaded(true)}
       />
-      <div className="text-center mb-6">
+      <div className="text-center">
         <p className="uppercase text-xs text-gray-400 tracking-widest py-4">LOCATION</p>
         <h2 className="text-base">
           <p className="font-semibold">오시는 길</p>
-          <div className="mt-4">
+          <div className="text-sm text-gray-700 leading-relaxed mt-6">
             <p>서울 광진구 능동로 110</p>
             <p>스타시티영존 5층 스타시티아트홀</p>
           </div>
