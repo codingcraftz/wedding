@@ -22,34 +22,39 @@ export default function AnimatedSection({
 
       if (!ref.current) return;
 
-      // 현재 요소가 화면에 보이는지 확인
+      // 현재 요소가 화면에 보이는지 확인 (15% 이상 보여야 함)
       const checkVisibility = () => {
+        if (!ref.current) return false;
+
         const rect = ref.current.getBoundingClientRect();
-        // 요소가 화면에 보이는 경우 (화면 아래 여백 300px 추가)
-        return rect.top < window.innerHeight + 300;
+        const elementHeight = rect.height;
+        const visibleHeight = Math.min(window.innerHeight - rect.top, elementHeight);
+
+        // 요소의 15% 이상이 화면에 보이는 경우
+        return visibleHeight > 0 && visibleHeight / elementHeight > 0.15;
       };
 
-      // 초기 로드 시 화면에 보이는 요소는 지연 후 애니메이션 적용
+      // 초기 로드 시 화면에 충분히 보이는 요소는 지연 후 애니메이션 적용
       if (checkVisibility()) {
-        // 요소별 지연 적용 (delay prop + 50ms 간격)
+        // 요소별 지연 적용
         setTimeout(() => {
           setIsVisible(true);
         }, delay);
         return;
       }
 
-      // 화면에 보이지 않는 요소는 IntersectionObserver로 모니터링
+      // 화면에 충분히 보이지 않는 요소는 IntersectionObserver로 모니터링
       const observer = new IntersectionObserver(
         ([entry]) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.15) {
             setIsVisible(true);
             observer.unobserve(entry.target);
           }
         },
         {
           root: null,
-          rootMargin: "300px", // 화면 아래 300px 지점에서 트리거
-          threshold: 0.01, // 1%만 보여도 트리거
+          rootMargin: "0px", // 화면에 정확히 들어왔을 때만 감지
+          threshold: 0.15, // 15% 이상 보일 때 트리거
         }
       );
 
