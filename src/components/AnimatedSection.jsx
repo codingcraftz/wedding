@@ -22,8 +22,7 @@ export default function AnimatedSection({
       },
       {
         root: null,
-        rootMargin: "0px 0px 20% 0px", // 뷰포트 하단 위로 30% 일찍 트리거
-        threshold: 0, // 혹은 0.01
+        threshold: 0.2, // 혹은 0.01
       }
     );
 
