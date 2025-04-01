@@ -21,7 +21,7 @@ const groomAccounts = [
   },
   {
     name: "최정미",
-    bank: "농협",
+    bank: "농협은행",
     accountNumber: "755018-51-114723",
     tossUrl: `supertoss://send?bank=농협&accountNo=755018-51-114723&origin=청첩장`,
     kakaoPayUrl: `https://qr.kakaopay.com/Ej9QfqGLl`,
@@ -30,17 +30,17 @@ const groomAccounts = [
 
 const brideAccounts = [
   {
-    name: "고상두",
-    bank: "우리은행",
-    accountNumber: "126-070458-12-501",
-    tossUrl: `supertoss://send?bank=우리은행&accountNo=126-070458-12-501&origin=청첩장`,
-    kakaoPayUrl: `https://qr.kakaopay.com/Ej9QfqGLl`,
-  },
-  {
     name: "고유미",
     bank: "우리은행",
     accountNumber: "1002-343-314255",
     tossUrl: `supertoss://send?bank=우리은행&accountNo=1002-343-314255&origin=청첩장`,
+    kakaoPayUrl: `https://qr.kakaopay.com/Ej9QfqGLl`,
+  },
+  {
+    name: "고상두",
+    bank: "우리은행",
+    accountNumber: "126-070458-12-501",
+    tossUrl: `supertoss://send?bank=우리은행&accountNo=126-070458-12-501&origin=청첩장`,
     kakaoPayUrl: `https://qr.kakaopay.com/Ej9QfqGLl`,
   },
 ];
@@ -61,6 +61,17 @@ const Account = () => {
     }
   };
 
+  // 관계 표시 함수
+  const getRelationship = (index, isBride) => {
+    if (index === 0) {
+      return isBride ? "신부" : "신랑";
+    } else if (index === 1) {
+      return "아버지";
+    } else {
+      return "어머니";
+    }
+  };
+
   const renderAccountBox = (title, accounts, expanded, setExpanded) => (
     <div className="bg-white border mt-4">
       <button
@@ -75,50 +86,28 @@ const Account = () => {
       {expanded && (
         <div className="divide-y">
           {accounts.map((account, i) => (
-            <div key={i} className="px-4 py-4 flex flex-col gap-3">
-              <div className="grid grid-cols-[6em_1fr] items-center">
+            <div key={i} className="px-4 py-3 flex flex-col gap-2">
+              <div className="grid grid-cols-[4em_1fr] items-center">
                 <span className="text-sm text-gray-500 text-left">
-                  {i === 0
-                    ? title.includes("신랑")
-                      ? "신랑"
-                      : "신부"
-                    : i === 1
-                    ? title.includes("신랑")
-                      ? "아버지"
-                      : "어머니"
-                    : "어머니"}
+                  {getRelationship(i, title.includes("신부"))}
                 </span>
                 <span className="text-sm font-medium text-gray-900 text-left">{account.name}</span>
               </div>
-              <div className="grid grid-cols-[6em_1fr] items-center">
-                <span className="text-sm text-gray-500 text-left">{account.bank}</span>
+              <div className="grid grid-cols-[4em_1fr] items-center">
+                <span className="text-sm text-gray-500 text-left"></span>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-900">{account.accountNumber}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {account.bank} {account.accountNumber}
+                  </span>
                   <button
                     onClick={() => copyToClipboard(account.accountNumber, account.name)}
-                    className="bg-gray-100 text-gray-600 px-2 py-1 text-xs rounded-full hover:bg-gray-200 flex items-center gap-1 ml-2"
+                    className="bg-gray-100 text-gray-600 px-2 py-1 text-xs rounded-full hover:bg-gray-200 flex items-center gap-1 ml-2 whitespace-nowrap"
                   >
                     <Copy size={12} />
                     <span>복사</span>
                   </button>
                 </div>
               </div>
-              {/* <div className="mt-2 flex gap-2">
-                <a
-                  href={account.tossUrl}
-                  className="flex-1 py-2 px-3 bg-[#ee7685] hover:bg-[#d35e6c] text-white rounded-lg text-sm flex items-center justify-center gap-1 transition-colors"
-                >
-                  <span>토스로 송금</span>
-                  <ExternalLink size={14} />
-                </a>
-                <a
-                  href={account.kakaoPayUrl}
-                  className="flex-1 py-2 px-3 bg-[#f8d5da] hover:bg-[#ee7685] text-[#d35e6c] hover:text-white rounded-lg text-sm flex items-center justify-center gap-1 transition-colors"
-                >
-                  <span>카카오페이</span>
-                  <ExternalLink size={14} />
-                </a>
-              </div> */}
             </div>
           ))}
         </div>
