@@ -483,10 +483,10 @@ export default function Guestbook() {
           <AlertDialogFooter className="pt-4 flex gap-2">
             <AlertDialogCancel className="flex-1 py-2 rounded-md border">취소</AlertDialogCancel>
             <motion.button
-              whileHover={{ backgroundColor: "#E53E3E" }}
+              whileHover={{ backgroundColor: "#d35e6c" }}
               whileTap={{ scale: 0.97 }}
               onClick={deleteMessage}
-              className="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+              className="flex-1 py-2 bg-[#ee7685] hover:bg-[#d35e6c] text-white rounded-md"
             >
               삭제하기
             </motion.button>
