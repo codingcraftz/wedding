@@ -232,13 +232,7 @@ export default function GalleryGrid() {
             <DialogTrigger asChild />
             <DialogContent className="max-w-screen-lg w-full h-[90vh] p-0 border-0 shadow-none bg-transparent outline-none !ring-0">
               <DialogTitle className="sr-only">갤러리 이미지 보기</DialogTitle>
-
-              {/* 커스텀 닫기 버튼 */}
-
-              <div
-                ref={sliderRef}
-                className="keen-slider w-full h-full bg-black/60 backdrop-blur-sm"
-              >
+              <div ref={sliderRef} className="keen-slider w-full h-full bg-none backdrop-blur-sm">
                 {images.map((src, i) => (
                   <motion.div
                     key={src}
