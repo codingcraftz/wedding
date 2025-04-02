@@ -4,16 +4,17 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { X, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
-  DialogClose,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import { X } from "lucide-react";
 
 // 로컬 이미지 경로 배열
 const images = Array.from({ length: 20 }, (_, i) => `/gallery/gallery_${i + 1}.jpeg`);
@@ -60,33 +61,11 @@ export default function GalleryGrid() {
   const [ref, inView] = useInView({ threshold: 0.1, triggerOnce: false, rootMargin: "5% 0px" });
   const [loading, setLoading] = useState(true);
 
-  const [sliderRef, instanceRef] = useKeenSlider({
-    loop: true,
-    initial: 0,
-    slideChanged: (s) => {
-      try {
-        if (s?.track?.details) {
-          setActiveIndex(s.track.details.rel);
-        }
-      } catch (err) {
-        console.error("슬라이더 변경 오류:", err);
-      }
-    },
-  });
-
-  // activeIndex가 변경될 때 슬라이더의 슬라이드 위치 업데이트
-  useEffect(() => {
-    if (activeIndex !== null && instanceRef.current) {
-      instanceRef.current.moveToIdx(activeIndex);
-    }
-  }, [activeIndex, instanceRef]);
-
-  // 컴포넌트 마운트 시 로딩 상태를 일정 시간 후 자동으로 해제
+  // 컴포넌트 마운트 시 로딩 상태 해제
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
     }, 800);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -94,31 +73,17 @@ export default function GalleryGrid() {
     controls.start(inView ? "visible" : "hidden");
   }, [controls, inView]);
 
-  // 간단하게 슬라이스만 수행
+  // 보여줄 이미지 선택
   const visibleImages = isExpanded ? images : images.slice(0, 6);
 
-  const toggleExpand = () => {
-    setIsExpanded((prev) => !prev);
-  };
-
-  const openModal = (index) => {
-    setActiveIndex(index);
-  };
-
+  const toggleExpand = () => setIsExpanded((prev) => !prev);
+  const openModal = (index) => setActiveIndex(index);
   const closeModal = () => setActiveIndex(null);
 
   const buttonVariants = {
     initial: { opacity: 0, y: 20 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: { delay: 0.3, duration: 0.4 },
-    },
-    hover: {
-      scale: 1.05,
-      backgroundColor: "rgb(243, 244, 246)",
-      transition: { duration: 0.2 },
-    },
+    animate: { opacity: 1, y: 0, transition: { delay: 0.3, duration: 0.4 } },
+    hover: { scale: 1.05, backgroundColor: "rgb(243, 244, 246)", transition: { duration: 0.2 } },
   };
 
   return (
@@ -238,41 +203,39 @@ export default function GalleryGrid() {
           <Dialog open={activeIndex !== null} onOpenChange={(open) => !open && closeModal()}>
             <DialogTrigger asChild />
             <DialogContent className="max-w-screen-lg w-full h-[90vh] p-0 border-0 shadow-none bg-transparent outline-none !ring-0">
+              <DialogClose asChild>
+                <button className="absolute top-4 right-4 z-10 p-2 bg-black rounded-full">
+                  <X className="h-4 w-4 text-white" />
+                </button>
+              </DialogClose>
               <DialogTitle className="sr-only">갤러리 이미지 보기</DialogTitle>
-              <div ref={sliderRef} className="keen-slider w-full h-full bg-none backdrop-blur-sm">
-                {images.map((src, i) => (
-                  <motion.div
-                    key={src}
-                    className="keen-slider__slide flex items-center justify-center"
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Image
-                      src={src}
-                      alt={`갤러리 이미지 ${i + 1}`}
-                      width={1200}
-                      height={1200}
-                      className="w-full h-full object-contain"
-                      priority={i === activeIndex}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-
               {activeIndex !== null && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ delay: 0.2, duration: 0.3 }}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/30"
-                >
-                  <p className="text-white text-sm font-medium">
-                    {activeIndex + 1} / {images.length}
-                  </p>
-                </motion.div>
+                <>
+                  <Swiper initialSlide={activeIndex} loop={true} className="w-full h-full">
+                    {images.map((src, i) => (
+                      <SwiperSlide key={src}>
+                        <Image
+                          src={src}
+                          alt={`갤러리 이미지 ${i + 1}`}
+                          width={1200}
+                          height={1200}
+                          className="w-full h-full object-contain"
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/30"
+                  >
+                    <p className="text-white text-sm font-medium">
+                      {activeIndex + 1} / {images.length}
+                    </p>
+                  </motion.div>
+                </>
               )}
             </DialogContent>
           </Dialog>
