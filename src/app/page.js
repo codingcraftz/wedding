@@ -1,4 +1,5 @@
-import Image from "next/image";
+"use client";
+
 import MainContent from "@/components/MainContent";
 import WeddingCalendar from "@/components/WeddingCalendar";
 import NavigationAndAddress from "@/components/Map";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
@@ -57,22 +57,66 @@ export default function GalleryGrid() {
   const [activeIndex, setActiveIndex] = useState(null);
   const controls = useAnimation();
   const [ref, inView] = useInView({ threshold: 0.1, triggerOnce: false, rootMargin: "5% 0px" });
+  const [loadedImages, setLoadedImages] = useState([]);
+  const [error, setError] = useState(false);
 
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
     initial: activeIndex ?? 0,
-    slideChanged: (s) => setActiveIndex(s.track.details.rel),
+    slideChanged: (s) => {
+      try {
+        if (s && s.track && s.track.details) {
+          setActiveIndex(s.track.details.rel);
+        }
+      } catch (err) {
+        console.error("슬라이더 변경 오류:", err);
+      }
+    },
   });
 
   useEffect(() => {
     controls.start(inView ? "visible" : "hidden");
   }, [controls, inView]);
 
-  const visibleImages = isExpanded ? images : images.slice(0, 6);
+  const visibleImages = useMemo(() => {
+    try {
+      if (!images || !Array.isArray(images)) return [];
+      return isExpanded ? images : images.slice(0, 6);
+    } catch (err) {
+      console.error("이미지 처리 오류:", err);
+      return images ? images.slice(0, 6) : [];
+    }
+  }, [isExpanded, images]);
 
-  const toggleExpand = () => setIsExpanded((prev) => !prev);
-  const openModal = (index) => setActiveIndex(index);
+  const toggleExpand = () => {
+    try {
+      setIsExpanded((prev) => !prev);
+    } catch (err) {
+      console.error("확장 토글 오류:", err);
+      setIsExpanded(false);
+    }
+  };
+
+  const openModal = (index) => {
+    try {
+      if (index >= 0 && index < images.length) {
+        setActiveIndex(index);
+      }
+    } catch (err) {
+      console.error("모달 열기 오류:", err);
+    }
+  };
+
   const closeModal = () => setActiveIndex(null);
+
+  const handleImageLoad = (src) => {
+    setLoadedImages((prev) => [...prev, src]);
+  };
+
+  const handleImageError = (src) => {
+    console.error(`이미지 로드 실패: ${src}`);
+    setError(true);
+  };
 
   const buttonVariants = {
     initial: { opacity: 0, y: 20 },
@@ -156,6 +200,8 @@ export default function GalleryGrid() {
                   width={300}
                   height={300}
                   className="w-full h-full object-cover transition-transform duration-300"
+                  onLoadingComplete={() => handleImageLoad(src)}
+                  onError={() => handleImageError(src)}
                 />
               </motion.div>
             ))}
