@@ -230,14 +230,15 @@ export default function GalleryGrid() {
 
           <Dialog open={activeIndex !== null} onOpenChange={(open) => !open && closeModal()}>
             <DialogTrigger asChild />
-            <DialogContent className="max-w-screen-lg w-full h-[90vh] p-0 border-0 bg-black/80 backdrop-blur-sm">
+            <DialogContent className="max-w-screen-lg w-full h-[90vh] p-0 border-0 shadow-none bg-transparent outline-none !ring-0">
               <DialogTitle className="sr-only">갤러리 이미지 보기</DialogTitle>
-              <DialogClose className="absolute right-4 top-4 z-10 rounded-full bg-black/30 p-2 text-white hover:bg-black/50 transition-colors">
-                <X className="h-5 w-5" />
-                <span className="sr-only">닫기</span>
-              </DialogClose>
 
-              <div ref={sliderRef} className="keen-slider w-full h-full">
+              {/* 커스텀 닫기 버튼 */}
+
+              <div
+                ref={sliderRef}
+                className="keen-slider w-full h-full bg-black/60 backdrop-blur-sm"
+              >
                 {images.map((src, i) => (
                   <motion.div
                     key={src}

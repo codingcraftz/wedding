@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { Copy, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useInView } from "react-intersection-observer";
 
 const groomAccounts = [
   {
@@ -49,7 +48,6 @@ const brideAccounts = [
 
 // 애니메이션 변형(variants) 정의
 const containerVariants = {
-  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
@@ -62,7 +60,6 @@ const containerVariants = {
 };
 
 const titleVariants = {
-  hidden: { opacity: 0, y: -10 },
   visible: {
     opacity: 1,
     y: 0,
@@ -71,7 +68,6 @@ const titleVariants = {
 };
 
 const accountBoxVariants = {
-  hidden: { opacity: 0, y: 15 },
   visible: {
     opacity: 1,
     y: 0,
@@ -80,7 +76,6 @@ const accountBoxVariants = {
 };
 
 const accountItemVariants = {
-  hidden: { opacity: 0, x: -10 },
   visible: {
     opacity: 1,
     x: 0,
@@ -91,11 +86,6 @@ const accountItemVariants = {
 const Account = () => {
   const [expandedGroomSection, setExpandedGroomSection] = useState(true);
   const [expandedBrideSection, setExpandedBrideSection] = useState(true);
-  const [ref, inView] = useInView({
-    threshold: 0.1,
-    triggerOnce: false,
-    rootMargin: "5% 0px",
-  });
 
   const copyToClipboard = async (text, name) => {
     try {
@@ -192,10 +182,9 @@ const Account = () => {
 
   return (
     <motion.div
-      ref={ref}
       variants={containerVariants}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"}
+      initial="visible"
+      animate="visible"
       className="w-full mx-auto px-4 text-center pb-12"
     >
       <Toaster position="top-center" />

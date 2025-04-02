@@ -35,7 +35,6 @@ const supabase = createClient(
 
 // 애니메이션 변형(variants) 정의
 const containerVariants = {
-  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
@@ -47,7 +46,6 @@ const containerVariants = {
 };
 
 const titleVariants = {
-  hidden: { opacity: 0, y: -10 },
   visible: {
     opacity: 1,
     y: 0,
@@ -59,7 +57,6 @@ const titleVariants = {
 };
 
 const messageVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.97 },
   visible: (index) => ({
     opacity: 1,
     y: 0,
@@ -73,7 +70,6 @@ const messageVariants = {
 };
 
 const buttonVariants = {
-  hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
@@ -273,7 +269,7 @@ export default function Guestbook() {
     return (
       <motion.div
         variants={buttonVariants}
-        initial="hidden"
+        initial="visible"
         animate="visible"
         className="flex justify-center items-center gap-2 mt-6"
       >
@@ -320,10 +316,9 @@ export default function Guestbook() {
 
   return (
     <motion.div
-      ref={ref}
       variants={containerVariants}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"}
+      initial="visible"
+      animate="visible"
       className="px-4 py-10 max-w-md mx-auto w-full"
     >
       <Toaster position="top-center" />
@@ -356,7 +351,7 @@ export default function Guestbook() {
                 key={item.id}
                 custom={index}
                 variants={messageVariants}
-                initial="hidden"
+                initial="visible"
                 animate="visible"
                 exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                 whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
