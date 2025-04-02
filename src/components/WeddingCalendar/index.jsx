@@ -6,6 +6,7 @@ import { differenceInSeconds } from "date-fns";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { WEDDING_DATE } from "@/lib/constants";
+import dynamic from "next/dynamic";
 
 // 애니메이션 변형(variants) 정의
 const containerVariants = {
@@ -73,9 +74,11 @@ const dayBoxVariants = {
   },
 };
 
-export default function WeddingCalendar() {
+// 클라이언트 사이드 전용 컴포넌트로 변환하여 하이드레이션 에러 방지
+const WeddingCalendarComponent = () => {
   const weddingDate = new Date(WEDDING_DATE);
-  const [timeLeft, setTimeLeft] = useState(getTimeLeft());
+  const [mounted, setMounted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: false,
@@ -91,7 +94,11 @@ export default function WeddingCalendar() {
     return { days, hours, minutes, seconds };
   }
 
+  // 컴포넌트가 마운트된 후에만 타이머 설정
   useEffect(() => {
+    setMounted(true);
+    setTimeLeft(getTimeLeft());
+
     const timer = setInterval(() => {
       setTimeLeft(getTimeLeft());
     }, 1000);
@@ -130,6 +137,15 @@ export default function WeddingCalendar() {
   const month = weddingDate.getMonth() + 1;
   const date = weddingDate.getDate();
   const dayText = ["일", "월", "화", "수", "목", "금", "토"][weddingDate.getDay()];
+
+  // 컴포넌트가 마운트되기 전에는 로딩 UI 표시 또는 빈 컴포넌트 반환
+  if (!mounted) {
+    return (
+      <div className="w-full px-8 py-20 text-center">
+        <p className="text-gray-500">캘린더 로딩 중...</p>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -237,7 +253,14 @@ export default function WeddingCalendar() {
       </motion.p>
     </motion.div>
   );
-}
+};
+
+// 클라이언트 사이드에서만 렌더링되도록 dynamic import 사용
+const WeddingCalendar = dynamic(() => Promise.resolve(WeddingCalendarComponent), {
+  ssr: false,
+});
+
+export default WeddingCalendar;
 
 function CountdownBox({ label, value, showColon, index }) {
   return (
