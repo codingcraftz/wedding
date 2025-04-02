@@ -62,7 +62,7 @@ export default function GalleryGrid() {
 
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
-    initial: activeIndex ?? 0,
+    initial: 0,
     slideChanged: (s) => {
       try {
         if (s?.track?.details) {
@@ -73,6 +73,13 @@ export default function GalleryGrid() {
       }
     },
   });
+
+  // activeIndex가 변경될 때 슬라이더의 슬라이드 위치 업데이트
+  useEffect(() => {
+    if (activeIndex !== null && instanceRef.current) {
+      instanceRef.current.moveToIdx(activeIndex);
+    }
+  }, [activeIndex, instanceRef]);
 
   // 컴포넌트 마운트 시 로딩 상태를 일정 시간 후 자동으로 해제
   useEffect(() => {
